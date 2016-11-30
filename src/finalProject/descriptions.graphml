@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"  
+    	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    	 xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns 
+    	 http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+
+
+<!-- Attributes: edge weights, edge types and node types -->
+<key id="d1" for="edge" attr.name="weight" attr.type="double">
+	<default>60.0</default>
+</key>
+<key id="d2" for="edge" attr.name="type" attr.type="string">
+	<default>A</default>
+</key>
+
+<key id="d3" for="node" attr.name="type" attr.type="string">
+	<default>T</default>
+</key>
+
+<!-- Parse information -->
+  <graph id="Graph" edgedefault="directed"
+  					parse.nodes="35"
+  					parse.edges="7"
+  					parse.nodeids="free"
+  					parse.edgeids="free"
+  					parse.order="nodesfirst">
+  <!-- Location nodes -->
+    <node id="Wokingham">
+    	<data key="d3">L</data>
+    </node>
+    <node id="Bracknell">
+        <data key="d3">L</data>
+    </node>
+    <node id="Warfield">
+    	<data key="d3">S</data>
+    </node>
+    <node id="Bagshot">
+    	<data key="d3">S</data>
+    </node>
+    <node id="Knowl-Hill">
+    	<data key="d3">S</data>
+    </node>
+    <node id="Winkfield-Row">
+    	<data key="d3">S</data>
+    </node>
+    <node id="Sunninghdale">
+    	<data key="d3">S</data>
+    </node>
+    <node id="Virginia-Water">
+    	<data key="d3">S</data>
+    </node>
+    <node id="Egham">
+        <data key="d3">L</data>
+    </node>
+    <node id="Old-Windsor">
+    	<data key="d3">S</data>
+    </node>
+    <node id="Windsor">
+        <data key="d3">L</data>
+    </node>
+    <node id="Slough">
+        <data key="d3">L</data>
+    </node>
+    <node id="Burnham">
+    	<data key="d3">S</data>
+    </node>
+    <node id="Uxbridge">
+        <data key="d3">L</data>
+    </node>
+    
+<!-- Transition nodes -->
+	<node id="n0"/>
+	<node id="n1"/>
+	<node id="n2"/>
+	<node id="n3"/>
+	<node id="n4"/>
+	<node id="n5"/>
+	<node id="n6"/>
+	<node id="n7"/>
+	<node id="n8"/>
+	<node id="n9"/>
+	<node id="n10"/>
+	<node id="n11"/>
+	<node id="n12"/>
+	<node id="n13"/>
+	<node id="n14"/>
+	<node id="n15"/>
+	<node id="n16"/>
+	<node id="n17"/>
+	<node id="n18"/>
+	<node id="n19"/>
+	<node id="n20"/>
+
+<!-- Edges -->        
+    <edge id="A0" source="Wokingham" target="n0"/>
+    <edge id="A1" source="n0" target="n1"/>
+    <edge id="M1" source="n1" target="n2">
+    	<data key="d2">M</data>
+    	<data key="d1">40.0</data>
+    </edge>
+    <edge id="M2" source="n2" target="n3"/>
+    	<data key="d2">M</data>
+    	<data key="d1">40.0</data>
+    </edge>
+    <edge id="M3" source="n3" target="n4"/>
+    	<data key="d2">M</data>
+    	<data key="d1">40.0</data>
+    </edge>
+    <edge id="M4" source="n4" target="n5"/>
+    	<data key="d2">M</data>
+    	<data key="d1">40.0</data>
+    </edge>
+    <edge id="M5" source="n5" target="n6"/>
+    	<data key="d2">M</data>
+    	<data key="d1">40.0</data>
+    </edge>
+  </graph>
+
+</graphml>
+	
