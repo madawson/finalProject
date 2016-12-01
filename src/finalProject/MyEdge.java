@@ -3,30 +3,38 @@ package finalProject;
 public class MyEdge {
 	
 	private double weight;
-	private double threshold;
+	private int threshold;
 	private String id;
 	private String type;
 	private int numUsers;
 	private int capacity;
 	
 	public void setWeight(double weight){
-		weight = this.weight;
+		this.weight = weight;
 	}
 	
 	public double getWeight(){
 		return weight;
 	}
 	
-	public void setThreshold(double threshold){
-		threshold = this.threshold;
+	public void setThreshold(int threshold){
+		this.threshold = threshold;
 	}
 	
-	public double getThreshold(){
+	public int getThreshold(){
 		return threshold;
 	}
 	
+	public void setCapacity(int capacity){
+		this.capacity = capacity;
+	}
+	
+	public int getCapacity(){
+		return capacity;
+	}	
+	
 	public void setId(String id){
-		id = this.id;
+		this.id = id;
 	}
 	
 	public String getId(){
@@ -34,11 +42,19 @@ public class MyEdge {
 	}
 	
 	public void setType(String type){
-		type=this.type;
+		this.type = type;
 	}
 	
 	public String getType(){
 		return type;
+	}
+	
+	public void setNumUsers(int numUsers){
+		this.numUsers = numUsers;
+	}
+	
+	public int getNumUsers(){
+		return numUsers;
 	}
 	
 	public void joinEdge(){

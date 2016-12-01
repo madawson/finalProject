@@ -35,11 +35,11 @@ public class NodeSelector {
 		for(int i= 0; i < nodeList.size(); i++){
 			container = nodeList.get(i);
 			checkType = container.getType();
-			if(checkType == type)
+			if(checkType.equals(type))
 				subSetList.add(container);
 		}
 		
-		int index = rnd.nextInt(subSetList.size() + 1);
+		int index = rnd.nextInt(subSetList.size());
 		MyNode node = subSetList.get(index);
 		
 		return node;

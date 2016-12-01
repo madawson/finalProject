@@ -9,6 +9,7 @@ import edu.uci.ics.jung.graph.*;
 public class GraphLoader{
 		
 	static String src = "src/finalProject/descriptions.graphml";
+	static String type;
 
 	public static DirectedSparseMultigraph<MyNode,MyEdge> importGraph(){
 	        	
@@ -38,10 +39,26 @@ public class GraphLoader{
             //Edge Transformer
             Transformer<EdgeMetadata,MyEdge> edgeTransformer = new Transformer<EdgeMetadata,MyEdge>(){
                     public MyEdge transform(EdgeMetadata emd){
-                            MyEdge e = new MyEdge() ;
-                            e.setWeight(Double.parseDouble(emd.getProperty("d1")));
-                            e.setType(emd.getProperty("d2"));
+                            MyEdge e = new MyEdge();
                             e.setId(emd.getId());
+                            type = emd.getProperty("d2");
+                            e.setType(type);
+                            if(type.equals("M")){
+                            	e.setWeight(40.0);
+                            	e.setThreshold(100);
+                            	e.setCapacity(150);
+                            	e.setNumUsers(0);
+                            }
+                            else if(type.equals("A")){
+                            	e.setWeight(60.0);
+                            	e.setThreshold(70);
+                            	e.setCapacity(100);
+                            	e.setNumUsers(0);
+                            }
+                         //   e.setWeight(Double.parseDouble(emd.getProperty("d1")));   
+                         //   e.setThreshold(Double.parseDouble(emd.getProperty("d4")));
+                         //   e.setCapacity(Integer.parseInt(emd.getProperty("d6")));
+                         //   e.setNumUsers(Integer.parseInt(emd.getProperty("d5")));
                             return e;
                     }
             };

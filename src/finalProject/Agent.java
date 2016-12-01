@@ -14,13 +14,16 @@ public class Agent {
 	MyNode endNode;
 	List<MyEdge> path;
 	
+	int check;
+	MyEdge e;
+	
 	public Agent(){
 		
 	}
 
 	public Agent(NodeSelector nodeSelector, RouteFinder routeFinder){
-		nodeSelector = this.nodeSelector;
-		routeFinder = this.routeFinder;
+		this.nodeSelector = nodeSelector;
+		this.routeFinder = routeFinder;
 		
 		startNode = nodeSelector.getNode();
 		endNode = nodeSelector.getNode();
@@ -35,7 +38,14 @@ public class Agent {
 		
 		//TODO logic executed at every iteration.
 		System.out.println("I Exist!");
+		System.out.println("My start node is: " + startNode.getId());
+		System.out.println("My end node is: " + endNode.getId());
+		System.out.println("My path size is: " + path.size());
 		
+	/*	for(int i = 0; i < path.size(); i++){
+			e = path.get(i);
+			System.out.println(e.getId()); 
+		} */
 		
 		
 	}

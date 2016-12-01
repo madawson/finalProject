@@ -6,7 +6,7 @@ public class MyNode {
 	private String id;
 		
 	public void setType(String type){
-		type=this.type;
+		this.type = type;
 	}
 	
 	public String getType(){
@@ -14,7 +14,7 @@ public class MyNode {
 	}
 	
 	public void setId(String id){
-		id=this.id;
+		this.id = id;
 	}
 	
 	public String getId(){
