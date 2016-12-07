@@ -17,7 +17,7 @@
 <!-- Parse information -->
   <graph id="Graph" edgedefault="directed"
   					parse.nodes="39"
-  					parse.edges="42" 
+  					parse.edges="88" 
   					parse.nodeids="free"
   					parse.edgeids="free"
   					parse.order="nodesfirst">
@@ -92,7 +92,148 @@
 	<node id="n23"/>
 	<node id="n24"/>
 
-<!-- Edges -->        
+<!-- Edges --> 
+    <!-- M-Roads -->
+    <edge id="M1" source="n1" target="n2"> 
+    	<data key="d2">M</data>
+    </edge>
+    <edge id="M2" source="n2" target="n3">
+    	<data key="d2">M</data>
+    </edge>  
+    <edge id="M3" source="n3" target="n4">
+    	<data key="d2">M</data>
+    </edge> 
+    <edge id="M4" source="n4" target="n5">
+    	<data key="d2">M</data>
+    </edge> 
+    <edge id="M5" source="n5" target="n6">
+    	<data key="d2">M</data>
+    </edge>
+    <edge id="M6" source="n6" target="n7">
+    	<data key="d2">M</data>
+    </edge>
+    <edge id="M7" source="n7" target="n8">
+    	<data key="d2">M</data>
+    </edge> 
+    <edge id="M8" source="Bagshot" target="n14">
+    	<data key="d2">M</data>
+    </edge> 
+    <edge id="M9" source="n14" target="n15">
+    	<data key="d2">M</data>
+    </edge> 
+    <edge id="M10" source="n15" target="Sunningdale">
+    	<data key="d2">M</data>
+    </edge>
+    <edge id="M11" source="Sunningdale" target="Virginia-Water">
+    	<data key="d2">M</data>
+    </edge>
+    <edge id="M12" source="Virginia-Water" target="Egham">
+    	<data key="d2">M</data>
+    </edge>
+    <edge id="M13" source="Egham" target="n12">
+    	<data key="d2">M</data>
+    </edge>
+    <edge id="M14" source="n11" target="n16">
+    	<data key="d2">M</data>
+    </edge>
+    <edge id="M15" source="n16" target="n17">
+    	<data key="d2">M</data>
+    </edge> 
+    <edge id="M16" source="n17" target="n18">
+    	<data key="d2">M</data>
+    </edge>
+    <edge id="M17" source="n18" target="n19">
+    	<data key="d2">M</data>
+    </edge>
+    <edge id="M18" source="n19" target="n20">
+    	<data key="d2">M</data>
+    </edge>
+    <edge id="M19" source="n20" target="n12">
+    	<data key="d2">M</data>
+    </edge>
+    <edge id="M20" source="n12" target="n21">
+    	<data key="d2">M</data>
+    </edge>
+    <edge id="M21" source="n21" target="n8">
+    	<data key="d2">M</data>
+    </edge>
+    <edge id="M22" source="n8" target="n22">
+    	<data key="d2">M</data>
+    </edge>
+    <edge id="M23" source="n22" target="n23">
+    	<data key="d2">M</data>
+    </edge>
+    <edge id="M24" source="n2" target="n1"> 
+    	<data key="d2">M</data>
+    </edge>
+    <edge id="M25" source="n3" target="n2">
+    	<data key="d2">M</data>
+    </edge>  
+    <edge id="M26" source="n4" target="n3">
+    	<data key="d2">M</data>
+    </edge> 
+    <edge id="M27" source="n5" target="n4">
+    	<data key="d2">M</data>
+    </edge> 
+    <edge id="M28" source="n6" target="n5">
+    	<data key="d2">M</data>
+    </edge>
+    <edge id="M29" source="n7" target="n6">
+    	<data key="d2">M</data>
+    </edge>
+    <edge id="M30" source="n8" target="n7">
+    	<data key="d2">M</data>
+    </edge> 
+    <edge id="M31" source="n14" target="Bagshot">
+    	<data key="d2">M</data>
+    </edge> 
+    <edge id="M32" source="n15" target="n14">
+    	<data key="d2">M</data>
+    </edge> 
+    <edge id="M33" source="Sunningdale" target="n15">
+    	<data key="d2">M</data>
+    </edge>
+    <edge id="M34" source="Virginia-Water" target="Sunningdale">
+    	<data key="d2">M</data>
+    </edge>
+    <edge id="M35" source="Egham" target="Virginia-Water">
+    	<data key="d2">M</data>
+    </edge>
+    <edge id="M36" source="n12" target="Egham">
+    	<data key="d2">M</data>
+    </edge>
+    <edge id="M37" source="n16" target="n11">
+    	<data key="d2">M</data>
+    </edge>
+    <edge id="M38" source="n17" target="n16">
+    	<data key="d2">M</data>
+    </edge> 
+    <edge id="M39" source="n18" target="n17">
+    	<data key="d2">M</data>
+    </edge>
+    <edge id="M40" source="n19" target="n18">
+    	<data key="d2">M</data>
+    </edge>
+    <edge id="M41" source="n20" target="n19">
+    	<data key="d2">M</data>
+    </edge>
+    <edge id="M42" source="n12" target="n20">
+    	<data key="d2">M</data>
+    </edge>
+    <edge id="M43" source="n21" target="n12">
+    	<data key="d2">M</data>
+    </edge>
+    <edge id="M44" source="n8" target="n21">
+    	<data key="d2">M</data>
+    </edge>
+    <edge id="M45" source="n22" target="n8">
+    	<data key="d2">M</data>
+    </edge>
+    <edge id="M46" source="n23" target="n22">
+    	<data key="d2">M</data>
+    </edge>  
+    
+	<!-- A-Roads -->       
     <edge id="A0" source="Wokingham" target="n0"/>
     <edge id="A1" source="n0" target="n1"/>
     <edge id="A2" source="n0" target="Bracknell"/> 
@@ -112,75 +253,31 @@
     <edge id="A16" source="n23" target="n24"/>
     <edge id="A17" source="n24" target="Uxbridge"/>
     <edge id="A18" source="n4" target="Knowl-Hill"/> 
-    <edge id="M1" source="n1" target="n2"> 
-    	<data key="d2">M</data>
-    </edge>
-    <edge id="M2" source="n2" target="n3"/>
-    	<data key="d2">M</data>
-    </edge> 
-    <edge id="M3" source="n3" target="n4"/>
-    	<data key="d2">M</data>
-    </edge> 
-    <edge id="M4" source="n4" target="n5"/>
-    	<data key="d2">M</data>
-    </edge> 
-    <edge id="M5" source="n5" target="n6"/>
-    	<data key="d2">M</data>
-    </edge>
-    <edge id="M6" source="n6" target="n7"/>
-    	<data key="d2">M</data>
-    </edge>
-    <edge id="M7" source="n7" target="n8"/>
-    	<data key="d2">M</data>
-    </edge> 
-    <edge id="M8" source="Bagshot" target="n14"/>
-    	<data key="d2">M</data>
-    </edge> 
-    <edge id="M9" source="n14" target="n15"/>
-    	<data key="d2">M</data>
-    </edge> 
-    <edge id="M10" source="n15" target="Sunningdale"/>
-    	<data key="d2">M</data>
-    </edge>
-    <edge id="M11" source="Sunningdale" target="Virginia-Water"/>
-    	<data key="d2">M</data>
-    </edge>
-    <edge id="M12" source="Virginia-Water" target="Egham"/>
-    	<data key="d2">M</data>
-    </edge>
-    <edge id="M13" source="Egham" target="n12"/>
-    	<data key="d2">M</data>
-    </edge>
-    <edge id="M14" source="n11" target="n16"/>
-    	<data key="d2">M</data>
-    </edge>
-    <edge id="M15" source="n16" target="n17"/>
-    	<data key="d2">M</data>
-    </edge> 
-    <edge id="M16" source="n17" target="n18"/>
-    	<data key="d2">M</data>
-    </edge>
-    <edge id="M17" source="n18" target="n19"/>
-    	<data key="d2">M</data>
-    </edge>
-    <edge id="M18" source="n19" target="n20"/>
-    	<data key="d2">M</data>
-    </edge>
-    <edge id="M19" source="n20" target="n12"/>
-    	<data key="d2">M</data>
-    </edge>
-    <edge id="M20" source="n12" target="n21"/>
-    	<data key="d2">M</data>
-    </edge>
-    <edge id="M21" source="n21" target="n8"/>
-    	<data key="d2">M</data>
-    </edge>
-    <edge id="M22" source="n8" target="n22"/>
-    	<data key="d2">M</data>
-    </edge>
-    <edge id="M23" source="n22" target="n23"/>
-    	<data key="d2">M</data>
-    </edge> 
+    <edge id="A19" source="n6" target="Slough"/>
+    <edge id="A20" source="Bracknell" target="Bagshot"/>
+    <edge id="A21" source="n0" target="Wokingham"/>
+    <edge id="A22" source="n1" target="n0"/>
+    <edge id="A23" source="Bracknell" target="n0"/> 
+    <edge id="A24" source="Warfield" target="Bracknell"/>  
+    <edge id="A25" source="n4" target="Warfield"/> 
+    <edge id="A26" source="Winkfield-Row" target="Bracknell"/>
+    <edge id="A27" source="Windsor" target="Winkfield-Row"/>
+    <edge id="A28" source="n6" target="Windsor"/>
+    <edge id="A29" source="n9" target="Bracknell"/>
+    <edge id="A30" source="n10" target="n9"/>
+    <edge id="A31" source="Virginia-Water" target="n10"/> 
+    <edge id="A32" source="n11" target="Bagshot"/>
+    <edge id="A33" source="Old-Windsor" target="Windsor"/>
+    <edge id="A34" source="n12" target="Old-Windsor"/>
+    <edge id="A35" source="n13" target="n6"/>
+    <edge id="A36" source="Burnham" target="n13"/>
+    <edge id="A37" source="n24" target="n23"/>
+    <edge id="A38" source="Uxbridge" target="n24"/>
+    <edge id="A39" source="Knowl-Hill" target="n4"/> 
+    <edge id="A40" source="Slough" target="n6"/>
+    <edge id="A41" source="Bagshot" target="Bracknell"/>
+    
+
   </graph>
 
 </graphml>

@@ -13,8 +13,7 @@ public class FinalProjectBuilder implements ContextBuilder<Object> {
 		
 		context.setId("finalProject");
 		
-		DirectedSparseMultigraph<MyNode,MyEdge> g = new DirectedSparseMultigraph<MyNode, MyEdge>();
-		g = GraphLoader.importGraph();
+		DirectedSparseMultigraph<MyNode,MyEdge> g = GraphLoader.importGraph();
 		NodeSelector nodeSelector = new NodeSelector(g);
 		RouteFinder routeFinder = new RouteFinder(g);
 		
