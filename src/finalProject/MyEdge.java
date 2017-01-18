@@ -67,5 +67,6 @@ public class MyEdge {
 	public void leaveEdge(){
 		numUsers--;
 	}
+	
 }
 

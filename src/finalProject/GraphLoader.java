@@ -44,7 +44,7 @@ public class GraphLoader{
                             type = emd.getProperty("d2");
                             e.setType(type);
                             if(type.equals("M")){
-                            	e.setWeight(40.0);
+                            	e.setWeight(10.0);
                             	e.setThreshold(100);
                             	e.setCapacity(150);
                             	e.setNumUsers(0);
