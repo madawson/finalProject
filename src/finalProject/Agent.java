@@ -4,21 +4,23 @@ import java.util.List;
 
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 import repast.simphony.engine.schedule.ScheduledMethod;
-import repast.simphony.engine.schedule.Schedule;
-//import repast.simphony.engine.watcher.Watch;
-//import repast.simphony.engine.watcher.WatcherTriggerSchedule;
+import repast.simphony.engine.environment.RunEnvironment;
+
 
 public class Agent {
 	
+	//Utility variables
 	NodeSelector nodeSelector;
 	RouteFinder routeFinder;
 	MyNode startNode;
 	MyNode endNode;
 	List<MyEdge> path;
 	List<MyEdge> secondPath;
-	DirectedSparseMultigraph<MyNode,MyEdge> graph;
+	MyEdge e;
+	double weight;
+
 		
-	//Variable to keep track of the agents stage  through its path.
+	//Variable to keep track of the agents stage through its path.
 	int stage;
 		
 	//Variable to measure the progress along an edge.
@@ -26,10 +28,7 @@ public class Agent {
 		
 	//True if the agent is currently on a route.
 	boolean active;
-	
-	double weight;
-	MyEdge e;
-	
+		
 	//Empty constructor required because learningAgent implements this class.
 	public Agent(){		
 	}
@@ -77,12 +76,15 @@ public class Agent {
 					e = path.get(stage);
 					e.joinEdge();
 				}
-				weight = e.getWeight();
+				
 				//Progress is a function of edge weight.
+				weight = e.getWeight();
 				progress = progress + ((-0.1*weight) + 11);
+				
 				if(progress >= 100){
 					e.leaveEdge();
-					reset();
+					stage++;
+					progress=0;
 				}
 			
 		}
@@ -129,7 +131,7 @@ public class Agent {
 	
 	
 	private void secondPath(){
-		graph = routeFinder.getGraph();
+		DirectedSparseMultigraph<MyNode,MyEdge> graph = routeFinder.getGraph();
 		e = getFirstCongestedEdge(path);
 		graph.removeEdge(e);
 		secondPath = routeFinder.getSecondRoute(graph, startNode, endNode);
@@ -138,7 +140,7 @@ public class Agent {
 	
 	
 	private boolean checkStart(){
-		double tickCount = 210.0; //get the current system tick and pass it into this.
+		double tickCount = RunEnvironment.getInstance().getCurrentSchedule().getTickCount();;
 		double probability = routeFinder.getProbability(tickCount); 
 		if(Math.random() <= probability) 
 			return true;
@@ -149,7 +151,7 @@ public class Agent {
 	
 		
 	private void reset(){
-		stage=0;
+		stage = 0;
 		progress = 0;
 		active = false;
 		startNode = endNode;
@@ -164,19 +166,9 @@ public class Agent {
 		}
 	}
 	
+	//Required for data gathering.
 	public boolean getStatus(){
 		return active;
 	}
 	
-	
-		
-	/*	@Watch(watcheeClassName = "aClassName",
-			watcheeFieldNames = "aFieldName",
-			query = "aQuery",
-			whenToTrigger = WatcherTriggerSchedule.IMMEDIATE)
-	public void watch(){
-		//TODO logic executed only when something happens.
-
-	}*/
-
 }

@@ -36,29 +36,29 @@ public class RouteFinder {
 		//Construct the probability table.
 		probabilityTable = new HashMap<Double, Double>();
 		probabilityTable.put(0.0, 0.048);
-		probabilityTable.put(1.0, 0.014);
-		probabilityTable.put(2.0, 0.010);
-		probabilityTable.put(3.0, 0.014);
-		probabilityTable.put(4.0, 0.048);
-		probabilityTable.put(5.0, 0.119);
-		probabilityTable.put(6.0, 0.476);
-		probabilityTable.put(7.0, 0.833);
-		probabilityTable.put(8.0, 0.833);
-		probabilityTable.put(9.0, 0.643);
-		probabilityTable.put(10.0, 0.524);
-		probabilityTable.put(11.0, 0.548);
-		probabilityTable.put(12.0, 0.571);
-		probabilityTable.put(13.0, 0.619);
-		probabilityTable.put(14.0, 0.667);
-		probabilityTable.put(15.0, 0.714);
-		probabilityTable.put(16.0, 0.952);
-		probabilityTable.put(17.0, 1.0);
-		probabilityTable.put(18.0, 0.714);
-		probabilityTable.put(19.0, 0.476);
-		probabilityTable.put(20.0, 0.238);
-		probabilityTable.put(21.0, 0.167);
-		probabilityTable.put(22.0, 0.095);
-		probabilityTable.put(23.0, 0.048);
+		probabilityTable.put(1.0, 0.0);
+		probabilityTable.put(2.0, 0.0);
+		probabilityTable.put(3.0, 0.0);
+		probabilityTable.put(4.0, 0.0);
+		probabilityTable.put(5.0, 0.0);
+		probabilityTable.put(6.0, 0.0);
+		probabilityTable.put(7.0, 0.0);
+		probabilityTable.put(8.0, 0.0);
+		probabilityTable.put(9.0, 0.0);
+		probabilityTable.put(10.0, 0.0);
+		probabilityTable.put(11.0, 0.0);
+		probabilityTable.put(12.0, 0.0);
+		probabilityTable.put(13.0, 0.0);
+		probabilityTable.put(14.0, 0.0);
+		probabilityTable.put(15.0, 0.0);
+		probabilityTable.put(16.0, 0.0);
+		probabilityTable.put(17.0, 0.0);
+		probabilityTable.put(18.0, 0.0);
+		probabilityTable.put(19.0, 0.0);
+		probabilityTable.put(20.0, 0.0);
+		probabilityTable.put(21.0, 0.0);
+		probabilityTable.put(22.0, 0.0);
+		probabilityTable.put(23.0, 0.0);
 	}
 	
 	public List<MyEdge> getRoute(MyNode startNode, MyNode endNode){

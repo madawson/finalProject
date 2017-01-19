@@ -1,8 +1,5 @@
 package finalProject;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 import repast.simphony.context.Context;
 import repast.simphony.dataLoader.ContextBuilder;
@@ -12,7 +9,7 @@ import repast.simphony.parameter.Parameters;
 public class FinalProjectBuilder implements ContextBuilder<Object> {
 
 	@Override
-	public Context build(Context<Object> context) {
+	public Context<Object> build(Context<Object> context) {
 		
 		context.setId("finalProject");
 		
