@@ -4,7 +4,6 @@ import java.util.List;
 
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 import repast.simphony.engine.schedule.ScheduledMethod;
-import repast.simphony.engine.environment.RunEnvironment;
 
 
 public class Agent {
@@ -12,18 +11,19 @@ public class Agent {
 	//Utility variables
 	NodeSelector nodeSelector;
 	RouteFinder routeFinder;
+	Supervisor supervisor;
 	MyNode startNode;
 	MyNode endNode;
 	List<MyEdge> path;
 	List<MyEdge> secondPath;
+	
+	//Stores the current edge.
 	MyEdge e;
-	double weight;
-
 		
-	//Variable to keep track of the agents stage through its path.
+	//Tracks the agents stage through its path.
 	int stage;
 		
-	//Variable to measure the progress along an edge.
+	//Tracks the progress along the current edge.
 	double progress;
 		
 	//True if the agent is currently on a route.
@@ -34,7 +34,7 @@ public class Agent {
 	}
 
 	//Agent constructor.
-	public Agent(NodeSelector nodeSelector, RouteFinder routeFinder){
+	public Agent(NodeSelector nodeSelector, RouteFinder routeFinder, Supervisor supervisor){
 		
 		//Initialise the agent instance variables.
 		stage = 0;			
@@ -42,6 +42,7 @@ public class Agent {
 		active = false;
 		this.nodeSelector = nodeSelector;
 		this.routeFinder = routeFinder;
+		this.supervisor = supervisor;
 		
 		//Obtain the first start and end nodes.
 		startNode = nodeSelector.getNode();
@@ -64,8 +65,10 @@ public class Agent {
 	public void step(){
 		
 		if(active==false){
-			if(checkStart()) 
+			if(checkStart()){
 				active = true;
+				supervisor.incrementNumAgents();
+			}
 			else 
 				return;
 		}
@@ -77,9 +80,7 @@ public class Agent {
 					e.joinEdge();
 				}
 				
-				//Progress is a function of edge weight.
-				weight = e.getWeight();
-				progress = progress + ((-0.1*weight) + 11);
+				updateProgress();
 				
 				if(progress >= 100){
 					e.leaveEdge();
@@ -108,7 +109,7 @@ public class Agent {
 //------------------Utility Methods---------------------------------------------------------------------------------------
 	
 
-	private boolean checkCongestion(List<MyEdge> path){
+	protected boolean checkCongestion(List<MyEdge> path){
 		for(int i = 0; i < path.size(); i++){
 			e = path.get(i);
 			if(e.getThreshold() >= e.getCapacity())
@@ -119,7 +120,7 @@ public class Agent {
 	
 	
 	
-	private MyEdge getFirstCongestedEdge(List<MyEdge> path){
+	protected MyEdge getFirstCongestedEdge(List<MyEdge> path){
 		for(int i = 0; i < path.size(); i++){
 			e = path.get(i);
 			if(e.getThreshold() >= e.getCapacity())
@@ -130,7 +131,7 @@ public class Agent {
 	
 	
 	
-	private void secondPath(){
+	protected void secondPath(){
 		DirectedSparseMultigraph<MyNode,MyEdge> graph = routeFinder.getGraph();
 		e = getFirstCongestedEdge(path);
 		graph.removeEdge(e);
@@ -139,21 +140,27 @@ public class Agent {
 	
 	
 	
-	private boolean checkStart(){
-		double tickCount = RunEnvironment.getInstance().getCurrentSchedule().getTickCount();;
-		double probability = routeFinder.getProbability(tickCount); 
+	protected boolean checkStart(){
+		double probability = supervisor.getProbability(); 
 		if(Math.random() <= probability) 
 			return true;
 		else 
 			return false;
 	}
 	
+	protected void updateProgress(){
+		double weight;
+		//Progress is a function of edge weight.
+		weight = e.getWeight();
+		progress = progress + ((-0.1*weight) + 11);
+	}
 	
 		
-	private void reset(){
+	protected void reset(){
 		stage = 0;
 		progress = 0;
 		active = false;
+		supervisor.decrementNumAgents();
 		startNode = endNode;
 		endNode = nodeSelector.getNode();
 		

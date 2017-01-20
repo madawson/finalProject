@@ -19,10 +19,21 @@ public class FinalProjectBuilder implements ContextBuilder<Object> {
 		
 		Parameters params = RunEnvironment.getInstance().getParameters();
 		int agentCount = params.getInteger("agent_count");
+		int learningAgentCount = params.getInteger("learning_agent_count");
+		
+		Supervisor supervisor = new Supervisor(agentCount);		
+		
 		for (int i = 0; i < agentCount; i++) {
-			context.add(new Agent(nodeSelector, routeFinder));
+			context.add(new Agent(nodeSelector, routeFinder, supervisor));
 		}
 		
+
+		for(int i = 0; i < learningAgentCount; i++){
+			context.add(new LearningAgent(nodeSelector, routeFinder, supervisor));
+		}
+		
+		context.add(supervisor);
+				
 		return context;
 	}
 

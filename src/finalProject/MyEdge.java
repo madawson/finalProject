@@ -66,6 +66,9 @@ public class MyEdge {
 	
 	public void leaveEdge(){
 		numUsers--;
+		if(numUsers >= capacity){
+			weight -= 0.1;
+		}
 	}
 	
 }
