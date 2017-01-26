@@ -45,14 +45,14 @@ public class GraphLoader{
                             e.setType(type);
                             if(type.equals("M")){
                             	e.setWeight(10.0);
-                            	e.setThreshold(500);
-                            	e.setCapacity(800);
+                            	e.setThreshold(80);
+                            	e.setCapacity(100);
                             	e.setNumUsers(0);
                             }
                             else if(type.equals("A")){
                             	e.setWeight(60.0);
-                            	e.setThreshold(400);
-                            	e.setCapacity(600);
+                            	e.setThreshold(60);
+                            	e.setCapacity(80);
                             	e.setNumUsers(0);
                             }
                          //   e.setWeight(Double.parseDouble(emd.getProperty("d1")));   

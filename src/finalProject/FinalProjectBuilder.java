@@ -1,5 +1,7 @@
 package finalProject;
 
+import java.util.ArrayList;
+
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 import repast.simphony.context.Context;
 import repast.simphony.dataLoader.ContextBuilder;
@@ -14,6 +16,13 @@ public class FinalProjectBuilder implements ContextBuilder<Object> {
 		context.setId("finalProject");
 		
 		DirectedSparseMultigraph<MyNode,MyEdge> g = GraphLoader.importGraph();
+		
+		ArrayList<MyEdge> edges = new ArrayList<MyEdge>(g.getEdges());
+		
+		for(int i = 0; i < edges.size(); i++){
+			context.add(edges.get(i));
+		}
+		
 		NodeSelector nodeSelector = new NodeSelector(g);
 		RouteFinder routeFinder = new RouteFinder(g);
 		

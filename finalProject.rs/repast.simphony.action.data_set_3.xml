@@ -1,5 +1,5 @@
 <repast.simphony.data2.engine.DataSetDescriptor>
-  <name>Active Learning Agent Count</name>
+  <name>Graph Statistics</name>
   <type>AGGREGATE</type>
   <inclTick>true</inclTick>
   <inclBatchRun>false</inclBatchRun>
@@ -11,16 +11,25 @@
     <pType>LAST</pType>
     <duration>-1.0</duration>
     <frequency>REPEAT</frequency>
-    <hashCode>797844448</hashCode>
+    <hashCode>-575673754</hashCode>
   </scheduleParams>
   <atEnd>false</atEnd>
   <methodDataSources class="linked-hash-map">
     <entry>
-      <string>Learning Agent Count</string>
+      <string>Total Edge Weight</string>
       <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>Learning Agent Count</id>
-        <className>finalProject.LearningAgent</className>
-        <methodName>getStatus</methodName>
+        <id>Total Edge Weight</id>
+        <className>finalProject.MyEdge</className>
+        <methodName>getWeight</methodName>
+        <aggType>SUM</aggType>
+      </repast.simphony.data2.engine.MethodDataSourceDefinition>
+    </entry>
+    <entry>
+      <string>Total Number of Users</string>
+      <repast.simphony.data2.engine.MethodDataSourceDefinition>
+        <id>Total Number of Users</id>
+        <className>finalProject.MyEdge</className>
+        <methodName>getNumUsers</methodName>
         <aggType>SUM</aggType>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>

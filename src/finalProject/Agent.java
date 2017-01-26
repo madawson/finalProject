@@ -16,6 +16,8 @@ public class Agent {
 	MyNode endNode;
 	List<MyEdge> path;
 	List<MyEdge> secondPath;
+	int journeyLength;
+	int latestJourneyLength;
 	
 	//Stores the current edge.
 	MyEdge e;
@@ -40,6 +42,8 @@ public class Agent {
 		stage = 0;			
 		progress = 0;		
 		active = false;
+		journeyLength = 0;
+		latestJourneyLength = 0;
 		this.nodeSelector = nodeSelector;
 		this.routeFinder = routeFinder;
 		this.supervisor = supervisor;
@@ -93,15 +97,6 @@ public class Agent {
 			reset();
 		}
 		
-
-//		System.out.println("My start node is: " + startNode.getId());
-//		System.out.println("My end node is: " + endNode.getId());
-//		System.out.println("My path size is: " + path.size());
-//		System.out.println("I'm at stage " + stage);	
-//		System.out.println("My progress along this edge is " + progress);
-//		System.out.println("The number of people on this edge is " + e.getNumUsers());
-//		System.out.println("It is " + active + " that I am active");
-//		System.out.println("I have recieved a warning: ");
 	}
 	
 
@@ -153,6 +148,7 @@ public class Agent {
 		//Progress is a function of edge weight.
 		weight = e.getWeight();
 		progress = progress + ((-0.1*weight) + 11);
+		journeyLength++;
 	}
 	
 		
@@ -160,6 +156,8 @@ public class Agent {
 		stage = 0;
 		progress = 0;
 		active = false;
+		latestJourneyLength = journeyLength;
+		journeyLength = 0;
 		supervisor.decrementNumAgents();
 		startNode = endNode;
 		endNode = nodeSelector.getNode();
@@ -173,9 +171,14 @@ public class Agent {
 		}
 	}
 	
-	//Required for data gathering.
+//------------------Data Gathering Methods---------------------------------------------------------------------------------------
+	
 	public boolean getStatus(){
 		return active;
+	}
+	
+	public int getLatestJourneyLength(){
+		return latestJourneyLength;
 	}
 	
 }

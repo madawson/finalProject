@@ -1,5 +1,5 @@
 <repast.simphony.data2.engine.DataSetDescriptor>
-  <name>Learning Agent Count</name>
+  <name>Supervisor Statistics</name>
   <type>AGGREGATE</type>
   <inclTick>true</inclTick>
   <inclBatchRun>false</inclBatchRun>
@@ -11,19 +11,21 @@
     <pType>LAST</pType>
     <duration>-1.0</duration>
     <frequency>REPEAT</frequency>
-    <hashCode>797844448</hashCode>
+    <hashCode>459283807</hashCode>
   </scheduleParams>
   <atEnd>false</atEnd>
-  <methodDataSources class="linked-hash-map"/>
-  <countSources class="linked-hash-map">
+  <methodDataSources class="linked-hash-map">
     <entry>
-      <string>Learning Agent Count</string>
-      <repast.simphony.data2.engine.CountSourceDefinition>
-        <typeName>finalProject.LearningAgent</typeName>
-        <id>Learning Agent Count</id>
-      </repast.simphony.data2.engine.CountSourceDefinition>
+      <string>Probability</string>
+      <repast.simphony.data2.engine.MethodDataSourceDefinition>
+        <id>Probability</id>
+        <className>finalProject.Supervisor</className>
+        <methodName>getProbability</methodName>
+        <aggType>SUM</aggType>
+      </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>
-  </countSources>
+  </methodDataSources>
+  <countSources class="linked-hash-map"/>
   <customNADataSources class="linked-hash-map"/>
   <customAggDataSources class="linked-hash-map"/>
 </repast.simphony.data2.engine.DataSetDescriptor>

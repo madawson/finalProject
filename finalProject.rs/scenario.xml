@@ -9,4 +9,8 @@
 <repast.simphony.action.time_series_chart context="finalProject" file="repast.simphony.action.time_series_chart_6.xml" />
 <repast.simphony.action.time_series_chart context="finalProject" file="repast.simphony.action.time_series_chart_7.xml" />
 <repast.simphony.action.time_series_chart context="finalProject" file="repast.simphony.action.time_series_chart_8.xml" />
+<repast.simphony.action.time_series_chart context="finalProject" file="repast.simphony.action.time_series_chart_9.xml" />
+<repast.simphony.action.time_series_chart context="finalProject" file="repast.simphony.action.time_series_chart_10.xml" />
+<repast.simphony.action.time_series_chart context="finalProject" file="repast.simphony.action.time_series_chart_11.xml" />
+<repast.simphony.action.time_series_chart context="finalProject" file="repast.simphony.action.time_series_chart_12.xml" />
 </Scenario>
