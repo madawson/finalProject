@@ -44,16 +44,20 @@ public class GraphLoader{
                             type = emd.getProperty("d2");
                             e.setType(type);
                             if(type.equals("M")){
-                            	e.setWeight(10.0);
-                            	e.setThreshold(80);
-                            	e.setCapacity(100);
+                            	e.setInitialWeight(40.0);
+                            	e.setWeight(40.0);
+                            	e.setThreshold(20);
+                            	e.setCapacity(25);
                             	e.setNumUsers(0);
+                            	e.setInitialProgressRate(10.0);
                             }
                             else if(type.equals("A")){
+                            	e.setInitialWeight(60.0);
                             	e.setWeight(60.0);
-                            	e.setThreshold(60);
-                            	e.setCapacity(80);
+                            	e.setThreshold(15);
+                            	e.setCapacity(20);
                             	e.setNumUsers(0);
+                            	e.setInitialProgressRate(5.0);
                             }
                          //   e.setWeight(Double.parseDouble(emd.getProperty("d1")));   
                          //   e.setThreshold(Double.parseDouble(emd.getProperty("d4")));

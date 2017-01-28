@@ -144,10 +144,7 @@ public class Agent {
 	}
 	
 	protected void updateProgress(){
-		double weight;
-		//Progress is a function of edge weight.
-		weight = e.getWeight();
-		progress = progress + ((-0.1*weight) + 11);
+		progress = progress + e.getProgressRate();
 		journeyLength++;
 	}
 	

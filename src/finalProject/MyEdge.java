@@ -2,12 +2,17 @@ package finalProject;
 
 public class MyEdge {
 	
+	private double initialWeight;
 	private double weight;
+	private double excessWeight;
+	private double initialProgressRate;
 	private int threshold;
 	private String id;
 	private String type;
 	private int numUsers;
+	private double excess;
 	private int capacity;
+	private boolean capacityBreached;
 	
 	public void setWeight(double weight){
 		this.weight = weight;
@@ -15,6 +20,14 @@ public class MyEdge {
 	
 	public double getWeight(){
 		return weight;
+	}
+	
+	public void setInitialWeight(double weight){
+		this.initialWeight = weight;
+	}
+	
+	public double getInitialWeight(){
+		return initialWeight;
 	}
 	
 	public void setThreshold(int threshold){
@@ -57,18 +70,48 @@ public class MyEdge {
 		return numUsers;
 	}
 	
+	public void setInitialProgressRate(double rate){
+		initialProgressRate = rate;
+	}
+	
+	public double getInitialProgressRate(){
+		return initialProgressRate;
+	}
+	
 	public void joinEdge(){
 		numUsers++;
+		if(!capacityBreached & (numUsers == capacity))
+			capacityBreached = true;
 		if(numUsers >= capacity){
-			weight += 0.1;
+			recalculateWeight();
 		}
 	}
 	
 	public void leaveEdge(){
 		numUsers--;
+		if(capacityBreached & (numUsers == capacity))
+			capacityBreached = false;
 		if(numUsers >= capacity){
-			weight -= 0.1;
+			recalculateWeight();
 		}
+	}
+	
+	public double getProgressRate(){
+		if(numUsers <= capacity)
+			return initialProgressRate;
+		else
+			//Progress is a function of excess edge weight.
+			return initialProgressRate - (Math.tanh(excessWeight/20)*4);
+	}
+	
+	public void recalculateWeight(){
+		excess = numUsers - capacity;
+		excessWeight = (Math.tanh(excess/10)*60);
+		weight = initialWeight + excessWeight;
+	}
+	
+	public boolean getCapacityBreached(){
+		return capacityBreached;
 	}
 	
 }
