@@ -59,10 +59,6 @@ public class GraphLoader{
                             	e.setNumUsers(0);
                             	e.setInitialProgressRate(5.0);
                             }
-                         //   e.setWeight(Double.parseDouble(emd.getProperty("d1")));   
-                         //   e.setThreshold(Double.parseDouble(emd.getProperty("d4")));
-                         //   e.setCapacity(Integer.parseInt(emd.getProperty("d6")));
-                         //   e.setNumUsers(Integer.parseInt(emd.getProperty("d5")));
                             return e;
                     }
             };

@@ -17,7 +17,6 @@ public class Agent {
 	List<MyEdge> path;
 	List<MyEdge> secondPath;
 	int journeyLength;
-	int latestJourneyLength;
 	
 	//Stores the current edge.
 	MyEdge e;
@@ -43,7 +42,6 @@ public class Agent {
 		progress = 0;		
 		active = false;
 		journeyLength = 0;
-		latestJourneyLength = 0;
 		this.nodeSelector = nodeSelector;
 		this.routeFinder = routeFinder;
 		this.supervisor = supervisor;
@@ -153,7 +151,7 @@ public class Agent {
 		stage = 0;
 		progress = 0;
 		active = false;
-		latestJourneyLength = journeyLength;
+		publishJourneyLength();
 		journeyLength = 0;
 		supervisor.decrementNumAgents();
 		startNode = endNode;
@@ -167,15 +165,15 @@ public class Agent {
 			secondPath();
 		}
 	}
+
+	protected void publishJourneyLength(){
+		supervisor.appendJourneyLength(journeyLength);
+	}
 	
 //------------------Data Gathering Methods---------------------------------------------------------------------------------------
 	
 	public boolean getStatus(){
 		return active;
-	}
-	
-	public int getLatestJourneyLength(){
-		return latestJourneyLength;
 	}
 	
 }

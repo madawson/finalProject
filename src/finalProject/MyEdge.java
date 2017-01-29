@@ -110,6 +110,8 @@ public class MyEdge {
 		weight = initialWeight + excessWeight;
 	}
 	
+//------------------Data Gathering Methods---------------------------------------------------------------------------------------
+	
 	public boolean getCapacityBreached(){
 		return capacityBreached;
 	}

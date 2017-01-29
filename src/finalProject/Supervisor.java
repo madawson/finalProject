@@ -16,6 +16,10 @@ public class Supervisor {
 	private HashMap<Double, Double> targetNumbers;
 	private double tickCount;
 	private double scaleFactor;
+	private int totalJourneyLength;
+	private int stepTotalJourneyLength;
+	private int averageTotalJourneyLength;
+	private int tracker;
 	
 	public Supervisor(int agentCount){
 		
@@ -51,11 +55,18 @@ public class Supervisor {
 		scaleFactor = agentCount/250;
 		
 		numAgents= 0.0;
+		
+		stepTotalJourneyLength = 0;
+		totalJourneyLength = 0;
+		averageTotalJourneyLength = 0;
+		
+		tracker = 0;
 	}
 	
-	@ScheduledMethod(start = 1, interval = 1) 
+	@ScheduledMethod(start = 2, interval = 1) 
 	public void postStep(){
 		
+		tracker++;
 		tickCount = RunEnvironment.getInstance().getCurrentSchedule().getTickCount();
 		targetNumAgents = (getTarget(tickCount))*scaleFactor;
 		upperBound = targetNumAgents + (10*scaleFactor);
@@ -68,12 +79,17 @@ public class Supervisor {
 			upperDistance = (upperBound - numAgents)/800;
 			probability = calculateStepChange(upperDistance);
 		}
+		
+		stepTotalJourneyLength = stepTotalJourneyLength + totalJourneyLength;
+		
+		if(tracker == 19){
+			averageTotalJourneyLength = stepTotalJourneyLength/20;
+			totalJourneyLength = 0;
+			stepTotalJourneyLength = 0;
+			tracker = 0;
+		}
 	}
-	
-	public double getProbability(){
-		return probability;
-	}
-	
+		
 	public void incrementNumAgents(){
 		numAgents += 1.0;
 	}
@@ -92,6 +108,20 @@ public class Supervisor {
 		double i = tick % 1440;
 		i = i/60;
 		return targetNumbers.get(Math.floor(i));
+	}
+	
+	public void appendJourneyLength(int journeyLength){
+		totalJourneyLength = totalJourneyLength + journeyLength;
+	}
+	
+//------------------Data Gathering Methods---------------------------------------------------------------------------------------
+	
+	public double getProbability(){
+		return probability;
+	}
+	
+	public int getStepTotalJourneyLength(){
+		return averageTotalJourneyLength;
 	}
 
 }

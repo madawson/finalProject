@@ -1,5 +1,5 @@
 <repast.simphony.data2.engine.DataSetDescriptor>
-  <name>Agent Statistics</name>
+  <name>Learning Agent Statistics</name>
   <type>AGGREGATE</type>
   <inclTick>true</inclTick>
   <inclBatchRun>false</inclBatchRun>
@@ -11,35 +11,26 @@
     <pType>LAST</pType>
     <duration>-1.0</duration>
     <frequency>REPEAT</frequency>
-    <hashCode>-1842307099</hashCode>
+    <hashCode>797844448</hashCode>
   </scheduleParams>
   <atEnd>false</atEnd>
   <methodDataSources class="linked-hash-map">
     <entry>
-      <string>Active Agent Count</string>
+      <string>Active Learning Agent Count</string>
       <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>Active Agent Count</id>
-        <className>finalProject.Agent</className>
+        <id>Active Learning Agent Count</id>
+        <className>finalProject.LearningAgent</className>
         <methodName>getStatus</methodName>
         <aggType>SUM</aggType>
-      </repast.simphony.data2.engine.MethodDataSourceDefinition>
-    </entry>
-    <entry>
-      <string>Mean Journey Time</string>
-      <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>Mean Journey Time</id>
-        <className>finalProject.Agent</className>
-        <methodName>getLatestJourneyLength</methodName>
-        <aggType>MEAN</aggType>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>
   </methodDataSources>
   <countSources class="linked-hash-map">
     <entry>
-      <string>Agent Count</string>
+      <string>Learning Agent Count</string>
       <repast.simphony.data2.engine.CountSourceDefinition>
-        <typeName>finalProject.Agent</typeName>
-        <id>Agent Count</id>
+        <typeName>finalProject.LearningAgent</typeName>
+        <id>Learning Agent Count</id>
       </repast.simphony.data2.engine.CountSourceDefinition>
     </entry>
   </countSources>
