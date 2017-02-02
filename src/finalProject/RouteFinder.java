@@ -44,6 +44,17 @@ public class RouteFinder {
 		return pathTwo;
 	}
 	
+	public double getDistance(MyNode startNode, MyNode endNode){
+		Number distance = shortestPath.getDistance(startNode, endNode);
+		return distance.doubleValue();
+	}
+	
+	public double getSecondDistance(DirectedSparseMultigraph<MyNode,MyEdge> alteredGraph, MyNode startNode, MyNode endNode){
+		secondShortestPath = new DijkstraShortestPath<MyNode, MyEdge>(alteredGraph, t);
+		Number distance = secondShortestPath.getDistance(startNode, endNode);
+		return distance.doubleValue();
+	}
+	
 	public DirectedSparseMultigraph<MyNode,MyEdge> getGraph(){
 		return graph;
 	}

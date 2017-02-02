@@ -51,7 +51,7 @@ public class Supervisor {
 		targetNumbers.put(21.0, 35.0);
 		targetNumbers.put(22.0, 20.0);
 		targetNumbers.put(23.0, 10.0);
-		
+				
 		scaleFactor = agentCount/250;
 		
 		numAgents= 0.0;
@@ -113,6 +113,12 @@ public class Supervisor {
 	public void appendJourneyLength(int journeyLength){
 		totalJourneyLength = totalJourneyLength + journeyLength;
 	}
+	
+	public double getTimeIndex(){
+		double tick = RunEnvironment.getInstance().getCurrentSchedule().getTickCount();
+		return Math.floor((tick % 1440)/60);
+	}
+	
 	
 //------------------Data Gathering Methods---------------------------------------------------------------------------------------
 	

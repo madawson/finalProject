@@ -8,7 +8,7 @@ import repast.simphony.engine.schedule.ScheduledMethod;
 
 public class Agent {
 	
-	//Utility variables
+//Utility variables
 	NodeSelector nodeSelector;
 	RouteFinder routeFinder;
 	Supervisor supervisor;
@@ -17,27 +17,29 @@ public class Agent {
 	List<MyEdge> path;
 	List<MyEdge> secondPath;
 	int journeyLength;
+	double distance;
+	double secondDistance;
 	
-	//Stores the current edge.
+//Stores the current edge.
 	MyEdge e;
 		
-	//Tracks the agents stage through its path.
+//Tracks the agents stage through its path.
 	int stage;
 		
-	//Tracks the progress along the current edge.
+//Tracks the progress along the current edge.
 	double progress;
 		
-	//True if the agent is currently on a route.
+//True if the agent is currently on a route.
 	boolean active;
 		
-	//Empty constructor required because learningAgent implements this class.
+//Empty constructor required because learningAgent implements this class.
 	public Agent(){		
 	}
 
-	//Agent constructor.
+//Agent constructor.
 	public Agent(NodeSelector nodeSelector, RouteFinder routeFinder, Supervisor supervisor){
 		
-		//Initialise the agent instance variables.
+	//Initialise the agent instance variables.
 		stage = 0;			
 		progress = 0;		
 		active = false;
@@ -46,17 +48,19 @@ public class Agent {
 		this.routeFinder = routeFinder;
 		this.supervisor = supervisor;
 		
-		//Obtain the first start and end nodes.
+	//Obtain the first start and end nodes.
 		startNode = nodeSelector.getNode();
 		endNode = nodeSelector.getNode();
 		
-		//Try to avoid having the same start and end node (not crucial).
+	//Try to avoid having the same start and end node (not crucial).
 		endNode = (startNode == endNode) ? nodeSelector.getNode() : endNode;
 		
-		//Obtain a path.
-		path = routeFinder.getRoute(startNode, endNode);
-		if(checkCongestion(path)) 
-			secondPath();		
+	//Obtain a path.
+		path = this.routeFinder.getRoute(startNode, endNode);
+		distance = this.routeFinder.getDistance(startNode, endNode);
+		if(checkCongestion(path)){
+			//secondPath();	
+		}
 	}
 	
 	
@@ -66,6 +70,7 @@ public class Agent {
 	@ScheduledMethod(start = 1, interval = 1) 
 	public void step(){
 		
+//Do nothing unless active.
 		if(active==false){
 			if(checkStart()){
 				active = true;
@@ -74,7 +79,8 @@ public class Agent {
 			else 
 				return;
 		}
-		
+
+//Move along a route.
 		if(path.size() > 0 & stage < path.size()){
 
 				if(progress == 0){
@@ -93,6 +99,9 @@ public class Agent {
 		}
 		else {
 			reset();
+			if(checkCongestion(path)){
+				//secondPath();
+			}
 		}
 		
 	}
@@ -101,11 +110,11 @@ public class Agent {
 	
 //------------------Utility Methods---------------------------------------------------------------------------------------
 	
-
+//Check for at least one congested edge on the calculated route.
 	protected boolean checkCongestion(List<MyEdge> path){
 		for(int i = 0; i < path.size(); i++){
 			e = path.get(i);
-			if(e.getThreshold() >= e.getCapacity())
+			if(e.getNumUsers() >= e.getThreshold())
 				return true;
 		}
 		return false;
@@ -116,23 +125,25 @@ public class Agent {
 	protected MyEdge getFirstCongestedEdge(List<MyEdge> path){
 		for(int i = 0; i < path.size(); i++){
 			e = path.get(i);
-			if(e.getThreshold() >= e.getCapacity())
+			if(e.getNumUsers() >= e.getThreshold())
 				return e;
 		}
 		return null;
 	}
 	
 	
-	
+//Calculate a sub-optimal path.	
 	protected void secondPath(){
 		DirectedSparseMultigraph<MyNode,MyEdge> graph = routeFinder.getGraph();
 		e = getFirstCongestedEdge(path);
 		graph.removeEdge(e);
 		secondPath = routeFinder.getSecondRoute(graph, startNode, endNode);
+		secondDistance = routeFinder.getSecondDistance(graph, startNode, endNode);
+		System.out.println("I've calculated a second path! " + startNode.getId() + " to " + endNode.getId() + " distance = " + secondDistance);
 	}
 	
 	
-	
+//Check whether or not to start a new journey.
 	protected boolean checkStart(){
 		double probability = supervisor.getProbability(); 
 		if(Math.random() <= probability) 
@@ -141,12 +152,13 @@ public class Agent {
 			return false;
 	}
 	
+//Increase the progress along the current edge.
 	protected void updateProgress(){
 		progress = progress + e.getProgressRate();
 		journeyLength++;
 	}
 	
-		
+//Reset to conditions prior to starting a new route.	
 	protected void reset(){
 		stage = 0;
 		progress = 0;
@@ -161,11 +173,10 @@ public class Agent {
 		endNode = (startNode == endNode) ? nodeSelector.getNode() : endNode;
 		
 		path = routeFinder.getRoute(startNode, endNode);
-		if(checkCongestion(path)){
-			secondPath();
-		}
+		distance = this.routeFinder.getDistance(startNode, endNode);
 	}
 
+//Send the length of last completed journey to the supervisor.
 	protected void publishJourneyLength(){
 		supervisor.appendJourneyLength(journeyLength);
 	}
