@@ -1,6 +1,6 @@
 package finalProject;
 
-public class MyNode {
+public class MyNode{
 	
 	private String type;
 	private String id;

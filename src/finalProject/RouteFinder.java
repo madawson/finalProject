@@ -6,6 +6,7 @@ import org.apache.commons.collections15.Transformer;
 
 import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath;
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
+import edu.uci.ics.jung.graph.util.Pair;
 
 public class RouteFinder {
 	
@@ -15,7 +16,7 @@ public class RouteFinder {
 	DijkstraShortestPath<MyNode,MyEdge> shortestPath;
 	DijkstraShortestPath<MyNode,MyEdge> secondShortestPath;
 	Double weight;
-	DirectedSparseMultigraph<MyNode,MyEdge> graph;
+	static DirectedSparseMultigraph<MyNode,MyEdge> graph;
 		
 	public RouteFinder(DirectedSparseMultigraph<MyNode,MyEdge> g){
 	    
@@ -38,9 +39,12 @@ public class RouteFinder {
 		return pathOne;
 	}
 	
-	public List<MyEdge> getSecondRoute(DirectedSparseMultigraph<MyNode,MyEdge> alteredGraph, MyNode startNode, MyNode endNode){
-		secondShortestPath = new DijkstraShortestPath<MyNode, MyEdge>(alteredGraph, t);
+	public List<MyEdge> getSecondRoute(MyEdge e, MyNode startNode, MyNode endNode){
+		Pair<MyNode> endPoints = graph.getEndpoints(e);
+		graph.removeEdge(e);
+		secondShortestPath = new DijkstraShortestPath<MyNode, MyEdge>(graph, t);
 		pathTwo = secondShortestPath.getPath(startNode, endNode);
+		graph.addEdge(e, endPoints);
 		return pathTwo;
 	}
 	
@@ -49,14 +53,13 @@ public class RouteFinder {
 		return distance.doubleValue();
 	}
 	
-	public double getSecondDistance(DirectedSparseMultigraph<MyNode,MyEdge> alteredGraph, MyNode startNode, MyNode endNode){
-		secondShortestPath = new DijkstraShortestPath<MyNode, MyEdge>(alteredGraph, t);
+	public double getSecondDistance(MyEdge e, MyNode startNode, MyNode endNode){
+		Pair<MyNode> endPoints = graph.getEndpoints(e);
+		graph.removeEdge(e);
+		secondShortestPath = new DijkstraShortestPath<MyNode, MyEdge>(graph, t);
 		Number distance = secondShortestPath.getDistance(startNode, endNode);
+		graph.addEdge(e, endPoints);
 		return distance.doubleValue();
-	}
-	
-	public DirectedSparseMultigraph<MyNode,MyEdge> getGraph(){
-		return graph;
 	}
 	
 }

@@ -3,6 +3,7 @@ package finalProject;
 import java.util.List;
 
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
+import edu.uci.ics.jung.graph.util.Pair;
 import repast.simphony.engine.schedule.ScheduledMethod;
 
 
@@ -59,7 +60,7 @@ public class Agent {
 		path = this.routeFinder.getRoute(startNode, endNode);
 		distance = this.routeFinder.getDistance(startNode, endNode);
 		if(checkCongestion(path)){
-			//secondPath();	
+			secondPath();	
 		}
 	}
 	
@@ -75,6 +76,7 @@ public class Agent {
 			if(checkStart()){
 				active = true;
 				supervisor.incrementNumAgents();
+//				System.out.println("I've calculated a path! " + startNode.getId() + " to " + endNode.getId() + "path = " + path);	
 			}
 			else 
 				return;
@@ -100,7 +102,7 @@ public class Agent {
 		else {
 			reset();
 			if(checkCongestion(path)){
-				//secondPath();
+				secondPath();
 			}
 		}
 		
@@ -134,12 +136,15 @@ public class Agent {
 	
 //Calculate a sub-optimal path.	
 	protected void secondPath(){
-		DirectedSparseMultigraph<MyNode,MyEdge> graph = routeFinder.getGraph();
 		e = getFirstCongestedEdge(path);
-		graph.removeEdge(e);
-		secondPath = routeFinder.getSecondRoute(graph, startNode, endNode);
-		secondDistance = routeFinder.getSecondDistance(graph, startNode, endNode);
-		System.out.println("I've calculated a second path! " + startNode.getId() + " to " + endNode.getId() + " distance = " + secondDistance);
+		secondPath = routeFinder.getSecondRoute(e, startNode, endNode);
+		if(secondPath.isEmpty() == true){
+			secondPath = path;
+			secondDistance = routeFinder.getDistance(startNode, endNode);
+			return;
+		}
+		secondDistance = routeFinder.getSecondDistance(e, startNode, endNode);
+//		System.out.println("I've calculated a second path! " + startNode.getId() + " to " + endNode.getId() + "distance = " + secondDistance);		
 	}
 	
 	
