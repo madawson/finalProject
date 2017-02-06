@@ -12,4 +12,19 @@ public class State {
 		this.warningReceived = warningReceived;
 	}
 
+	public double getTimeIndex(){
+		return timeIndex;
+	}
+	
+	public void setTimeIndex(double timeIndex){
+		this.timeIndex = timeIndex;
+	}
+	
+	public boolean getWarningReceived(){
+		return warningReceived;
+	}
+	
+	public void setWarningReceived(boolean warningReceived){
+		this.warningReceived = warningReceived;
+	}
 }

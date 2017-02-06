@@ -10,16 +10,16 @@ public class LearningAgent extends Agent {
 	private boolean toggle;
 	private boolean action;
 	private double reward;
-	private double discountFactor; //*NOTE: You need to add functionality to make this decay.*
+	private double discountFactor; //*NOTE: You need to add proper functionality to make this decay intelligently and to choose the decay rate.*
 	private boolean warningReceived;
 	private StateAction currentStateAction;
 	private Double[] rewardAndDiscount;
-	
+		
 	public LearningAgent(NodeSelector nodeSelector, RouteFinder routeFinder, Supervisor supervisor){
 
 //-----Initialisation steps common to all agents---------------------------------------------------------
 		
-		//Initialise the agent instance variables.
+	//Initialise the agent instance variables.
 		stage = 0;			
 		progress = 0;		
 		active = false;
@@ -40,7 +40,7 @@ public class LearningAgent extends Agent {
 		distance = this.routeFinder.getDistance(startNode, endNode);
 		if(checkCongestion(path)){
 			warningReceived = true;
-			//secondPath();	
+			secondPath(routeFinder);	
 		}
 		
 //-----Initialisation steps for learning agents----------------------------------------------------------
@@ -49,6 +49,8 @@ public class LearningAgent extends Agent {
 		//48 states (24 time zones each with a boolean) and two possible actions.
 		//States are 0-23 and Actions are 0-1.		
 		qValues = new HashMap<StateAction,Double[]>();
+		
+		rewardAndDiscount = new Double[2];
 		
 		toggle = false;
 		action = true;
@@ -62,13 +64,14 @@ public class LearningAgent extends Agent {
 	
 		@ScheduledMethod(start = 1, interval = 1) 
 		public void step(){
-			
+									
 	//Do nothing unless active.
 			if(active==false){
-				if(checkStart()){
+				if(checkStart(supervisor)){
 					active = true;
 					toggle = true;
 					supervisor.incrementNumAgents();
+//					System.out.println(":" + stage + " " + progress + " " + active);		
 				}
 				else 
 					return;
@@ -83,6 +86,7 @@ public class LearningAgent extends Agent {
 				}
 				toggle = false;
 				warningReceived = false;
+				System.out.println("Current state action: " + action);
 			}
 			
 	//Move along a route.
@@ -105,13 +109,13 @@ public class LearningAgent extends Agent {
 			else {
 				//Calculate the reward (difference between estimated journey length and actual journey length)
 				updateQValue(currentStateAction,reward);
-				reset();
+				reset(supervisor, nodeSelector, routeFinder);
 				if(checkCongestion(path)){
 					warningReceived = true;
-					//secondPath();
+					secondPath(routeFinder);
 				}
 			}
-			
+//		System.out.print("End of step method reached. The instance parameters are as follows: " + stage + progress + active);	
 		}
 		
 //--------------Q-learning methods-----------------------------------------------------------------------------------
@@ -148,7 +152,9 @@ public class LearningAgent extends Agent {
 	private void updateQValue(StateAction stateAction, double reward){
 		double oldReward = qValues.get(stateAction)[0];
 		double newReward = oldReward + (discountFactor*(reward - oldReward));
-		//decay the discountFactor
+		if(discountFactor != 0.0){
+			discountFactor -= 0.1;
+		}
 		rewardAndDiscount[0] = newReward;
 		rewardAndDiscount[1] = discountFactor;
 		qValues.put(stateAction, rewardAndDiscount);

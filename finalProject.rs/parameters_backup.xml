@@ -6,8 +6,8 @@
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 									
 		/>
-				<parameter name="learning_agent_count" displayName="Initial number of learning agents" type="int" 
-						defaultValue="0" 
+				<parameter name="agent_count" displayName="Initial number of standard agents" type="int" 
+						defaultValue="10000" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 									

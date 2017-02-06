@@ -21,7 +21,7 @@ public class Supervisor {
 	private int averageTotalJourneyLength;
 	private int tracker;
 	
-	public Supervisor(int agentCount){
+	public Supervisor(int totalAgentCount){
 		
 		probability = 0.0;
 
@@ -52,7 +52,7 @@ public class Supervisor {
 		targetNumbers.put(22.0, 20.0);
 		targetNumbers.put(23.0, 10.0);
 				
-		scaleFactor = agentCount/250;
+		scaleFactor = totalAgentCount/250;
 		
 		numAgents= 0.0;
 		

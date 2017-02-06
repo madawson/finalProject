@@ -2,8 +2,6 @@ package finalProject;
 
 import java.util.List;
 
-import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
-import edu.uci.ics.jung.graph.util.Pair;
 import repast.simphony.engine.schedule.ScheduledMethod;
 
 
@@ -57,10 +55,10 @@ public class Agent {
 		endNode = (startNode == endNode) ? nodeSelector.getNode() : endNode;
 		
 	//Obtain a path.
-		path = this.routeFinder.getRoute(startNode, endNode);
-		distance = this.routeFinder.getDistance(startNode, endNode);
+		path = routeFinder.getRoute(startNode, endNode);
+		distance = routeFinder.getDistance(startNode, endNode);
 		if(checkCongestion(path)){
-			secondPath();	
+			secondPath(routeFinder);	
 		}
 	}
 	
@@ -70,13 +68,12 @@ public class Agent {
 	
 	@ScheduledMethod(start = 1, interval = 1) 
 	public void step(){
-		
+				
 //Do nothing unless active.
 		if(active==false){
-			if(checkStart()){
+			if(checkStart(supervisor)){
 				active = true;
 				supervisor.incrementNumAgents();
-//				System.out.println("I've calculated a path! " + startNode.getId() + " to " + endNode.getId() + "path = " + path);	
 			}
 			else 
 				return;
@@ -100,12 +97,11 @@ public class Agent {
 			
 		}
 		else {
-			reset();
+			reset(supervisor, nodeSelector, routeFinder);
 			if(checkCongestion(path)){
-				secondPath();
+				secondPath(routeFinder);
 			}
-		}
-		
+		}	
 	}
 	
 
@@ -135,7 +131,7 @@ public class Agent {
 	
 	
 //Calculate a sub-optimal path.	
-	protected void secondPath(){
+	protected void secondPath(RouteFinder routeFinder){
 		e = getFirstCongestedEdge(path);
 		secondPath = routeFinder.getSecondRoute(e, startNode, endNode);
 		if(secondPath.isEmpty() == true){
@@ -143,13 +139,12 @@ public class Agent {
 			secondDistance = routeFinder.getDistance(startNode, endNode);
 			return;
 		}
-		secondDistance = routeFinder.getSecondDistance(e, startNode, endNode);
-//		System.out.println("I've calculated a second path! " + startNode.getId() + " to " + endNode.getId() + "distance = " + secondDistance);		
+		secondDistance = routeFinder.getSecondDistance(e, startNode, endNode);	
 	}
 	
 	
 //Check whether or not to start a new journey.
-	protected boolean checkStart(){
+	protected boolean checkStart(Supervisor supervisor){
 		double probability = supervisor.getProbability(); 
 		if(Math.random() <= probability) 
 			return true;
@@ -164,11 +159,11 @@ public class Agent {
 	}
 	
 //Reset to conditions prior to starting a new route.	
-	protected void reset(){
+	protected void reset(Supervisor supervisor, NodeSelector nodeSelector, RouteFinder routeFinder){
 		stage = 0;
 		progress = 0;
 		active = false;
-		publishJourneyLength();
+		publishJourneyLength(supervisor);
 		journeyLength = 0;
 		supervisor.decrementNumAgents();
 		startNode = endNode;
@@ -178,11 +173,11 @@ public class Agent {
 		endNode = (startNode == endNode) ? nodeSelector.getNode() : endNode;
 		
 		path = routeFinder.getRoute(startNode, endNode);
-		distance = this.routeFinder.getDistance(startNode, endNode);
+		distance = routeFinder.getDistance(startNode, endNode);
 	}
 
 //Send the length of last completed journey to the supervisor.
-	protected void publishJourneyLength(){
+	protected void publishJourneyLength(Supervisor supervisor){
 		supervisor.appendJourneyLength(journeyLength);
 	}
 	
