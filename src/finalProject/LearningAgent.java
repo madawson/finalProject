@@ -1,19 +1,24 @@
 package finalProject;
 
 import java.util.HashMap;
+import java.util.List;
 
 import repast.simphony.engine.schedule.ScheduledMethod;
 
 public class LearningAgent extends Agent {
 	
 	private HashMap<StateAction, Double[]> qValues;
-	private boolean toggle;
+	private boolean preJourneyStage;
 	private boolean action;
 	private double reward;
 	private double discountFactor; //*NOTE: You need to add proper functionality to make this decay intelligently and to choose the decay rate.*
 	private boolean warningReceived;
 	private StateAction currentStateAction;
 	private Double[] rewardAndDiscount;
+	private double cumulativeWeight;
+	private double actualJourneyWeight;
+	private double estimatedJourneyWeight;
+	private int edgeJourneyTime;
 		
 	public LearningAgent(NodeSelector nodeSelector, RouteFinder routeFinder, Supervisor supervisor){
 
@@ -52,11 +57,15 @@ public class LearningAgent extends Agent {
 		
 		rewardAndDiscount = new Double[2];
 		
-		toggle = false;
+		preJourneyStage = false;
 		action = true;
 		reward = 0.0;
 		discountFactor = 0.6;
 		warningReceived = false;
+		cumulativeWeight = 0.0;
+		actualJourneyWeight = 0.0;
+		estimatedJourneyWeight = 0.0;
+		edgeJourneyTime = 0;
 		
 	}
 	
@@ -69,24 +78,24 @@ public class LearningAgent extends Agent {
 			if(active==false){
 				if(checkStart(supervisor)){
 					active = true;
-					toggle = true;
-					supervisor.incrementNumAgents();
-//					System.out.println(":" + stage + " " + progress + " " + active);		
+					preJourneyStage = true;
+					supervisor.incrementNumAgents();	
 				}
 				else 
 					return;
 			}
 
 	//Observe the state at the beginning of the journey.
-			if(toggle == true){
+			if(preJourneyStage == true){
 				//Observe the state and retrieve the appropriate action.
 				action = getAction(getState());
 				if(!action){
 					path = secondPath;
 				}
-				toggle = false;
+				preJourneyStage = false;
 				warningReceived = false;
-				System.out.println("Current state action: " + action);
+				estimatedJourneyWeight = calculateEstimatedJourneyWeight(path);
+				System.out.println("Proceed = " + action);
 			}
 			
 	//Move along a route.
@@ -98,24 +107,37 @@ public class LearningAgent extends Agent {
 					}
 					
 					updateProgress();
+					edgeJourneyTime += 1;
+					cumulativeWeight += e.getWeight();
 					
 					if(progress >= 100){
 						e.leaveEdge();
 						stage++;
 						progress=0;
+						actualJourneyWeight += (cumulativeWeight/edgeJourneyTime);
+						cumulativeWeight = 0.0;
+						edgeJourneyTime = 0;
 					}
 				
 			}
 			else {
 				//Calculate the reward (difference between estimated journey length and actual journey length)
+				reward = actualJourneyWeight - estimatedJourneyWeight;
+				System.out.println("Actual Journey Weight = " + actualJourneyWeight);
+				System.out.println("Estimated Journey Weight = " + estimatedJourneyWeight);
+				System.out.println("Q-Value BEFORE update = " + qValues.get(currentStateAction)[0]);
+				System.out.println("DF BEFORE update = " + qValues.get(currentStateAction)[1]);
+				actualJourneyWeight = 0.0;
+				estimatedJourneyWeight = 0.0;
 				updateQValue(currentStateAction,reward);
+				System.out.println("Q-Value AFTER update = " + qValues.get(currentStateAction)[0]);
+				System.out.println("DF AFTER update = " + qValues.get(currentStateAction)[1]);
 				reset(supervisor, nodeSelector, routeFinder);
 				if(checkCongestion(path)){
 					warningReceived = true;
 					secondPath(routeFinder);
 				}
 			}
-//		System.out.print("End of step method reached. The instance parameters are as follows: " + stage + progress + active);	
 		}
 		
 //--------------Q-learning methods-----------------------------------------------------------------------------------
@@ -149,6 +171,7 @@ public class LearningAgent extends Agent {
 		}
 	}
 	
+	//Update the stored Q-value and associated discount factor.
 	private void updateQValue(StateAction stateAction, double reward){
 		double oldReward = qValues.get(stateAction)[0];
 		double newReward = oldReward + (discountFactor*(reward - oldReward));
@@ -157,7 +180,26 @@ public class LearningAgent extends Agent {
 		}
 		rewardAndDiscount[0] = newReward;
 		rewardAndDiscount[1] = discountFactor;
+		qValues.remove(stateAction);
 		qValues.put(stateAction, rewardAndDiscount);
 	}
+	
+//--------------Utility methods-----------------------------------------------------------------------------------
+	
+	private double calculateEstimatedJourneyWeight(List<MyEdge> path){
+		double weight = 0.0;
+		MyEdge e;
+
+		if(path.size() > 0){
+			for(int stage = 0; stage<path.size(); stage++){
+					e = path.get(stage);
+					weight += e.getWeight();
+			}
+		return weight;
+		}
+		else {
+			return 0;
+		}
 		
+	}		
 }
