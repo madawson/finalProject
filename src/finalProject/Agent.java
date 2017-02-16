@@ -74,6 +74,11 @@ public class Agent {
 			if(checkStart(supervisor)){
 				active = true;
 				supervisor.incrementNumAgents();
+				path = routeFinder.getRoute(startNode, endNode);
+				distance = routeFinder.getDistance(startNode, endNode);
+				if(checkCongestion(path)){
+					secondPath(routeFinder);
+				}
 			}
 			else 
 				return;
@@ -98,9 +103,6 @@ public class Agent {
 		}
 		else {
 			reset(supervisor, nodeSelector, routeFinder);
-			if(checkCongestion(path)){
-				secondPath(routeFinder);
-			}
 		}	
 	}
 	
@@ -171,9 +173,6 @@ public class Agent {
 		
 		//Try to avoid having the same start and end node (not crucial).
 		endNode = (startNode == endNode) ? nodeSelector.getNode() : endNode;
-		
-		path = routeFinder.getRoute(startNode, endNode);
-		distance = routeFinder.getDistance(startNode, endNode);
 	}
 
 //Send the length of last completed journey to the supervisor.

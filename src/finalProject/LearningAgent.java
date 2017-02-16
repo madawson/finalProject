@@ -14,7 +14,6 @@ public class LearningAgent extends Agent {
 	private double discountFactor; //*NOTE: You need to add proper functionality to make this decay intelligently and to choose the decay rate.*
 	private int warningReceived; //0 if true, 1 if false.
 	private int currentStateAction;
-	private Double[] rewardAndDiscount;
 	private double cumulativeWeight;
 	private double actualJourneyWeight;
 	private double estimatedJourneyWeight;
@@ -43,12 +42,12 @@ public class LearningAgent extends Agent {
 		endNode = (startNode == endNode) ? nodeSelector.getNode() : endNode;
 		
 	//Obtain a path.
-		path = this.routeFinder.getRoute(startNode, endNode);
+/*		path = this.routeFinder.getRoute(startNode, endNode);
 		distance = this.routeFinder.getDistance(startNode, endNode);
 		if(checkCongestion(path)){
 			warningReceived = 0;
 			secondPath(routeFinder);	
-		}
+		} */
 		
 //-----Initialisation steps for learning agents----------------------------------------------------------
 		
@@ -58,7 +57,6 @@ public class LearningAgent extends Agent {
 		qValues = new HashMap<Integer,Double[]>();
 		
 	//Array that stores a reward value alongside an associated discount factor.
-		rewardAndDiscount = new Double[2];
 		stateArray = new int[24][2];
 		stateActionArray = new int[48][2];
 		
@@ -99,6 +97,12 @@ public class LearningAgent extends Agent {
 					active = true;
 					preJourneyStage = true;
 					supervisor.incrementNumAgents();	
+					path = routeFinder.getRoute(startNode, endNode);
+					distance = routeFinder.getDistance(startNode, endNode);
+					if(checkCongestion(path)){
+						warningReceived = 0;
+						secondPath(routeFinder);
+					}
 				}
 				else 
 					return;
@@ -112,9 +116,8 @@ public class LearningAgent extends Agent {
 					path = secondPath;
 				}
 				preJourneyStage = false;
-				warningReceived = 0;
+				warningReceived = 1;
 				estimatedJourneyWeight = calculateEstimatedJourneyWeight(path);
-				System.out.println("Proceed = " + action);
 			}
 			
 	//Move along a route.
@@ -142,20 +145,21 @@ public class LearningAgent extends Agent {
 			else {
 				//Calculate the reward (difference between estimated journey length and actual journey length)
 				reward = actualJourneyWeight - estimatedJourneyWeight;
+				System.out.println("Proceed = " + action);
 				System.out.println("Actual Journey Weight = " + actualJourneyWeight);
 				System.out.println("Estimated Journey Weight = " + estimatedJourneyWeight);
+				System.out.println("Current State Action Before Update = " + currentStateAction);
 				System.out.println("Q-Value BEFORE update = " + qValues.get(currentStateAction)[0]);
 				System.out.println("DF BEFORE update = " + qValues.get(currentStateAction)[1]);
 				actualJourneyWeight = 0.0;
 				estimatedJourneyWeight = 0.0;
 				updateQValue(currentStateAction,reward);
+				System.out.println("Current State Action After Update = " + currentStateAction);
 				System.out.println("Q-Value AFTER update = " + qValues.get(currentStateAction)[0]);
 				System.out.println("DF AFTER update = " + qValues.get(currentStateAction)[1]);
+				System.out.println(" ");
+				System.out.println(" ");
 				reset(supervisor, nodeSelector, routeFinder);
-				if(checkCongestion(path)){
-					warningReceived = 0;
-					secondPath(routeFinder);
-				}
 			}
 		}
 		
@@ -173,19 +177,28 @@ public class LearningAgent extends Agent {
 		Integer stateProceed = new Integer(stateActionArray[state][0]);
 		Integer stateYield = new Integer(stateActionArray[state][1]);
 		if(!qValues.containsKey(stateProceed) & !qValues.containsKey(stateYield)){
+			Double[] rewardAndDiscount = new Double[2];
 			rewardAndDiscount[0] = new Double(0.0);
 			rewardAndDiscount[1] = new Double(discountFactor);
 			qValues.put(stateProceed, rewardAndDiscount);
 			qValues.put(stateYield, rewardAndDiscount);
 			currentStateAction = stateProceed;
+			System.out.println("State Number = " + state);
+			System.out.println("Current StateAction Number = " + currentStateAction);
+			System.out.println("New Entry Created");
 			return 0;
 		}
 		else if(qValues.get(stateProceed)[0] > qValues.get(stateYield)[0]){
 			currentStateAction = stateYield;
+			System.out.println("State Number = " + state);
+			System.out.println("Current StateAction Number = " + currentStateAction);
 			return 1;
+
 		}
 		else{
 			currentStateAction = stateProceed;
+			System.out.println("State Number = " + state);
+			System.out.println("Current StateAction Number = " + currentStateAction);
 			return 0;
 		}
 	}
@@ -194,6 +207,7 @@ public class LearningAgent extends Agent {
 	private void updateQValue(int stateAction, double reward){
 		double oldReward = qValues.get(stateAction)[0];
 		double stateDiscountFactor = qValues.get(stateAction)[1];
+		Double[] rewardAndDiscount = new Double[2];
 		double newReward = oldReward + (stateDiscountFactor*(reward - oldReward));
 		if(stateDiscountFactor != 0.0){
 			stateDiscountFactor -= 0.1;
@@ -201,6 +215,11 @@ public class LearningAgent extends Agent {
 		rewardAndDiscount[0] = newReward;
 		rewardAndDiscount[1] = stateDiscountFactor;
 		qValues.put(stateAction, rewardAndDiscount);
+		System.out.println("Q-Value Updated for state action = " + stateAction);
+		System.out.println("Reward Received = " + reward);
+		System.out.println("Old Reward = " + oldReward);
+		System.out.println("New Reward = " + newReward);
+		System.out.println("New Discount Factor = " + stateDiscountFactor);
 	}
 	
 //--------------Utility methods-----------------------------------------------------------------------------------
