@@ -7,18 +7,20 @@ import repast.simphony.engine.schedule.ScheduledMethod;
 
 public class LearningAgent extends Agent {
 	
-	private HashMap<StateAction, Double[]> qValues;
+	private HashMap<Integer, Double[]> qValues;
 	private boolean preJourneyStage;
-	private boolean action;
+	private int action; //0 for proceed, 1 for yield.
 	private double reward;
 	private double discountFactor; //*NOTE: You need to add proper functionality to make this decay intelligently and to choose the decay rate.*
-	private boolean warningReceived;
-	private StateAction currentStateAction;
+	private int warningReceived; //0 if true, 1 if false.
+	private int currentStateAction;
 	private Double[] rewardAndDiscount;
 	private double cumulativeWeight;
 	private double actualJourneyWeight;
 	private double estimatedJourneyWeight;
 	private int edgeJourneyTime;
+	private int[][] stateArray;
+	private int[][] stateActionArray;
 		
 	public LearningAgent(NodeSelector nodeSelector, RouteFinder routeFinder, Supervisor supervisor){
 
@@ -44,7 +46,7 @@ public class LearningAgent extends Agent {
 		path = this.routeFinder.getRoute(startNode, endNode);
 		distance = this.routeFinder.getDistance(startNode, endNode);
 		if(checkCongestion(path)){
-			warningReceived = true;
+			warningReceived = 0;
 			secondPath(routeFinder);	
 		}
 		
@@ -53,19 +55,36 @@ public class LearningAgent extends Agent {
 		//Create the (empty) reward table.
 		//48 states (24 time zones each with a boolean) and two possible actions.
 		//States are 0-23 and Actions are 0-1.		
-		qValues = new HashMap<StateAction,Double[]>();
+		qValues = new HashMap<Integer,Double[]>();
 		
+	//Array that stores a reward value alongside an associated discount factor.
 		rewardAndDiscount = new Double[2];
+		stateArray = new int[24][2];
+		stateActionArray = new int[48][2];
 		
 		preJourneyStage = false;
-		action = true;
+		action = 0;
 		reward = 0.0;
 		discountFactor = 0.6;
-		warningReceived = false;
+		warningReceived = 1;
 		cumulativeWeight = 0.0;
 		actualJourneyWeight = 0.0;
 		estimatedJourneyWeight = 0.0;
 		edgeJourneyTime = 0;
+		
+	//Populate the state array
+	for(int i = 0; i<24; i++){
+		for(int j = 0; j<2; j++){
+			stateArray[i][j] = (2*i) + j;
+		}
+	}
+	
+	//Populate the state action array
+	for(int i = 0; i<48; i++){
+		for(int j = 0; j<2; j++){
+			stateActionArray[i][j] = (2*i) + j;
+		}
+	}	
 		
 	}
 	
@@ -89,11 +108,11 @@ public class LearningAgent extends Agent {
 			if(preJourneyStage == true){
 				//Observe the state and retrieve the appropriate action.
 				action = getAction(getState());
-				if(!action){
+				if(action == 1){
 					path = secondPath;
 				}
 				preJourneyStage = false;
-				warningReceived = false;
+				warningReceived = 0;
 				estimatedJourneyWeight = calculateEstimatedJourneyWeight(path);
 				System.out.println("Proceed = " + action);
 			}
@@ -134,7 +153,7 @@ public class LearningAgent extends Agent {
 				System.out.println("DF AFTER update = " + qValues.get(currentStateAction)[1]);
 				reset(supervisor, nodeSelector, routeFinder);
 				if(checkCongestion(path)){
-					warningReceived = true;
+					warningReceived = 0;
 					secondPath(routeFinder);
 				}
 			}
@@ -143,44 +162,44 @@ public class LearningAgent extends Agent {
 //--------------Q-learning methods-----------------------------------------------------------------------------------
 		
 	//Observe the current state.
-	private State getState(){
-		double timeIndex = supervisor.getTimeIndex();
-		State state = new State(timeIndex,warningReceived);
-		return state;
+	private int getState(){
+		int timeIndex = (int)supervisor.getTimeIndex();
+		return stateArray[timeIndex][warningReceived];
 	}
 	
 	//Select an action based on the current state.
-	private boolean getAction(State state){
-		StateAction proceed = new StateAction(state,true);
-		StateAction yield = new StateAction(state,false);
-		if(!qValues.containsKey(proceed) & !qValues.containsKey(yield)){
-			rewardAndDiscount[0] = 0.0;
-			rewardAndDiscount[1] = discountFactor;
-			qValues.put(proceed, rewardAndDiscount);
-			qValues.put(yield, rewardAndDiscount);
-			currentStateAction = proceed;
-			return true;
+	private int getAction(int state){
+		
+		Integer stateProceed = new Integer(stateActionArray[state][0]);
+		Integer stateYield = new Integer(stateActionArray[state][1]);
+		if(!qValues.containsKey(stateProceed) & !qValues.containsKey(stateYield)){
+			rewardAndDiscount[0] = new Double(0.0);
+			rewardAndDiscount[1] = new Double(discountFactor);
+			qValues.put(stateProceed, rewardAndDiscount);
+			qValues.put(stateYield, rewardAndDiscount);
+			currentStateAction = stateProceed;
+			return 0;
 		}
-		else if(qValues.get(proceed)[0] < qValues.get(yield)[0]){
-			currentStateAction = proceed;
-			return true;
+		else if(qValues.get(stateProceed)[0] > qValues.get(stateYield)[0]){
+			currentStateAction = stateYield;
+			return 1;
 		}
 		else{
-			currentStateAction = yield;
-			return false;
+			currentStateAction = stateProceed;
+			return 0;
 		}
 	}
 	
 	//Update the stored Q-value and associated discount factor.
-	private void updateQValue(StateAction stateAction, double reward){
+	private void updateQValue(int stateAction, double reward){
 		double oldReward = qValues.get(stateAction)[0];
-		double newReward = oldReward + (discountFactor*(reward - oldReward));
-		if(discountFactor != 0.0){
-			discountFactor -= 0.1;
+		double stateDiscountFactor = qValues.get(stateAction)[1];
+		double newReward = oldReward + (stateDiscountFactor*(reward - oldReward));
+		if(stateDiscountFactor != 0.0){
+			stateDiscountFactor -= 0.1;
 		}
 		rewardAndDiscount[0] = newReward;
-		rewardAndDiscount[1] = discountFactor;
-		qValues.remove(stateAction);
+		rewardAndDiscount[1] = stateDiscountFactor;
 		qValues.put(stateAction, rewardAndDiscount);
 	}
 	
