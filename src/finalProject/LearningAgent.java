@@ -189,17 +189,30 @@ public class LearningAgent extends Agent {
 			return 0;
 		}
 		else if(qValues.get(stateProceed)[0] > qValues.get(stateYield)[0]){
-			currentStateAction = stateYield;
-			System.out.println("State Number = " + state);
-			System.out.println("Current StateAction Number = " + currentStateAction);
-			return 1;
-
+			double difference = qValues.get(stateProceed)[0] - qValues.get(stateYield)[0];
+			double probability = Math.tanh(difference/100) + 0.05;
+			if(Math.random() <= probability){
+				currentStateAction = stateYield;
+				return 1;
+			}
+			else{
+				currentStateAction = stateProceed;
+				System.out.println("Cheeky! Your probability just got trumped!");
+				return 0;
+			}
 		}
 		else{
-			currentStateAction = stateProceed;
-			System.out.println("State Number = " + state);
-			System.out.println("Current StateAction Number = " + currentStateAction);
-			return 0;
+			double difference = qValues.get(stateYield)[0] - qValues.get(stateProceed)[0];
+			double probability = Math.tanh(difference/100) + 0.05;
+			if(Math.random() <= probability){
+				currentStateAction = stateProceed;
+				return 0;
+			}
+			else{
+				currentStateAction = stateYield;
+				System.out.println("Cheeky! Your probability just got trumped!");
+				return 1;
+			}
 		}
 	}
 	
