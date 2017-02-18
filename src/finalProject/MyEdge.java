@@ -2,17 +2,19 @@ package finalProject;
 
 public class MyEdge {
 	
-	private double initialWeight;
-	private double weight;
-	private double excessWeight;
-	private double initialProgressRate;
-	private int threshold;
-	private String id;
-	private String type;
-	private int numUsers;
-	private double excess;
-	private int capacity;
-	private boolean capacityBreached;
+	// The edge class represents a road in the network. Agents' rate of progress is determined within this class.
+	
+	private String id;						//Unique for each edge.
+	private String type;					//Either 'M' or 'A'
+	private double initialWeight;			//Predetermined value based on the type of the edge.
+	private double weight;					//The live edge weight.
+	private double excessWeight;			//Total weight above the initialWeight.
+	private double initialProgressRate;		
+	private double excessUsers;				//The number of users above the capacity.
+	private int capacity;					//Predetermined value. Edge weight begins to increase when numUsers breaches capacity.
+	private int threshold;					//Predetermined value. Agents begin receiving a congestion warning then numUsers breaches threshold.
+	private int numUsers;					//The number of active agents currently using the edge.
+	private boolean capacityBreached;		//Returns true when numUsers breaches capacity.
 	
 	public void setWeight(double weight){
 		this.weight = weight;
@@ -78,6 +80,7 @@ public class MyEdge {
 		return initialProgressRate;
 	}
 	
+	//Used by an agent to join this edge;
 	public void joinEdge(){
 		numUsers++;
 		if(!capacityBreached & (numUsers == capacity))
@@ -87,6 +90,7 @@ public class MyEdge {
 		}
 	}
 	
+	//Used by an agent to leave this edge.
 	public void leaveEdge(){
 		numUsers--;
 		if(capacityBreached & (numUsers == capacity))
@@ -96,6 +100,7 @@ public class MyEdge {
 		}
 	}
 	
+	//Used by an agent to retrieve the rate of progress at each time step.
 	public double getProgressRate(){
 		if(numUsers <= capacity)
 			return initialProgressRate;
@@ -105,8 +110,8 @@ public class MyEdge {
 	}
 	
 	public void recalculateWeight(){
-		excess = numUsers - capacity;
-		excessWeight = (Math.tanh(excess/10)*60);
+		excessUsers = numUsers - capacity;
+		excessWeight = (Math.tanh(excessUsers/10)*60);
 		weight = initialWeight + excessWeight;
 	}
 	

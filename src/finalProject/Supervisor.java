@@ -7,14 +7,13 @@ import repast.simphony.engine.schedule.ScheduledMethod;
 
 public class Supervisor {
 	
+	private HashMap<Double, Double> targetNumbers;		//Stores the target NoAA value for each time interval.
 	private double probability;
 	private double numAgents;
 	private double targetNumAgents;
 	private double upperBound;
 	private double lowerBound;
 	private double upperDistance;
-	private HashMap<Double, Double> targetNumbers;
-	private double tickCount;
 	private double scaleFactor;
 	private int totalJourneyLength;
 	private int stepTotalJourneyLength;
@@ -63,12 +62,13 @@ public class Supervisor {
 		tracker = 0;
 	}
 	
+	//------------------Post-Step Method---------------------------------------------------------------------------------------
+	
 	@ScheduledMethod(start = 2, interval = 1) 
 	public void postStep(){
 		
 		tracker++;
-		tickCount = RunEnvironment.getInstance().getCurrentSchedule().getTickCount();
-		targetNumAgents = (getTarget(tickCount))*scaleFactor;
+		targetNumAgents = (getTarget())*scaleFactor;
 		upperBound = targetNumAgents + (10*scaleFactor);
 		lowerBound = targetNumAgents - (10*scaleFactor);
 		if(numAgents >= upperBound)
@@ -89,6 +89,8 @@ public class Supervisor {
 			tracker = 0;
 		}
 	}
+	
+	//------------------Utility Methods---------------------------------------------------------------------------------------
 		
 	public void incrementNumAgents(){
 		numAgents += 1.0;
@@ -98,16 +100,15 @@ public class Supervisor {
 		numAgents -= 1.0;
 	}
 	
+	//Used to calculate the required changed in probability depending on the distance of the NoAA from the upper bound.
 	private double calculateStepChange(double distance){
 		double stepChange;
 		stepChange = (Math.log(distance/(1-distance))+4.6)/1060;
 		return stepChange;
 	}
 	
-	private double getTarget(double tick){	
-		double i = tick % 1440;
-		i = i/60;
-		return targetNumbers.get(Math.floor(i));
+	private double getTarget(){	
+		return targetNumbers.get(getTimeIndex());
 	}
 	
 	public void appendJourneyLength(int journeyLength){
@@ -117,10 +118,10 @@ public class Supervisor {
 	public double getTimeIndex(){
 		double tick = RunEnvironment.getInstance().getCurrentSchedule().getTickCount();
 		return Math.floor((tick % 1440)/60);
-	}
+	} 
 	
 	
-//------------------Data Gathering Methods---------------------------------------------------------------------------------------
+	//------------------Data Gathering Methods---------------------------------------------------------------------------------------
 	
 	public double getProbability(){
 		return probability;

@@ -10,13 +10,17 @@ import edu.uci.ics.jung.graph.util.Pair;
 
 public class RouteFinder {
 	
-	Transformer<MyEdge, Double> t;
-	List<MyEdge> pathOne;
-	List<MyEdge> pathTwo;
-	DijkstraShortestPath<MyNode,MyEdge> shortestPath;
-	DijkstraShortestPath<MyNode,MyEdge> secondShortestPath;
-	Double weight;
-	static DirectedSparseMultigraph<MyNode,MyEdge> graph;
+	/*The route finder class is used to calculate an optimal shortest route and a sub-optimal route, along with the live total
+	weight of each route.
+	 */
+	
+	private DirectedSparseMultigraph<MyNode,MyEdge> graph;
+	private DijkstraShortestPath<MyNode,MyEdge> shortestPath;
+	private DijkstraShortestPath<MyNode,MyEdge> secondShortestPath;
+	private Double weight;
+	private Transformer<MyEdge, Double> t;
+	private List<MyEdge> pathOne;
+	private List<MyEdge> pathTwo;
 		
 	public RouteFinder(DirectedSparseMultigraph<MyNode,MyEdge> g){
 	    

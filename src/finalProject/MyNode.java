@@ -2,6 +2,9 @@ package finalProject;
 
 public class MyNode{
 	
+	/*Each node consists of a type (either 'S' or 'L') and a unique ID.
+	 */
+	
 	private String type;
 	private String id;
 		

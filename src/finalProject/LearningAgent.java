@@ -9,56 +9,48 @@ public class LearningAgent extends Agent {
 	
 	private HashMap<Integer, Double[]> qValues;
 	private boolean preJourneyStage;
-	private int action; //0 for proceed, 1 for yield.
+	private int action; 					//0 for proceed, 1 for yield.
 	private double reward;
-	private double discountFactor; //*NOTE: You need to add proper functionality to make this decay intelligently and to choose the decay rate.*
-	private int warningReceived; //0 if true, 1 if false.
+	private double discountFactor; 			//*NOTE: You need to add proper functionality to make this decay intelligently and to choose the decay rate.*
+	private int warningReceived; 			//0 if true, 1 if false.
 	private int currentStateAction;
 	private double cumulativeWeight;
 	private double actualJourneyWeight;
 	private double estimatedJourneyWeight;
 	private int edgeJourneyTime;
-	private int[][] stateArray;
-	private int[][] stateActionArray;
+	private int[][] stateArray;				//Stores an index for each state.
+	private int[][] stateActionArray;		//Stores an index for a state/action pair.
+	private List<MyEdge> secondPath;		//Stores the current sub-optimal path.
+	
+	//-----Parameters used for data reporting----------------------------------------------------------------
 		
 	public LearningAgent(NodeSelector nodeSelector, RouteFinder routeFinder, Supervisor supervisor){
 
-//-----Initialisation steps common to all agents---------------------------------------------------------
+	//-----Initialisation steps common to all agents---------------------------------------------------------
 		
-	//Initialise the agent instance variables.
+		//Initialise the agent instance variables.
 		stage = 0;			
-		progress = 0;		
+		progress = 0;
 		active = false;
 		journeyLength = 0;
 		this.nodeSelector = nodeSelector;
 		this.routeFinder = routeFinder;
 		this.supervisor = supervisor;
 		
-	//Obtain the first start and end nodes.
+		//Obtain the first start and end nodes.
 		startNode = nodeSelector.getNode();
 		endNode = nodeSelector.getNode();
 		
-	//Try to avoid having the same start and end node (not crucial).
+		//Try to avoid having the same start and end node (not crucial).
 		endNode = (startNode == endNode) ? nodeSelector.getNode() : endNode;
+				
+	//-----Initialisation steps for learning agents----------------------------------------------------------
 		
-	//Obtain a path.
-/*		path = this.routeFinder.getRoute(startNode, endNode);
-		distance = this.routeFinder.getDistance(startNode, endNode);
-		if(checkCongestion(path)){
-			warningReceived = 0;
-			secondPath(routeFinder);	
-		} */
-		
-//-----Initialisation steps for learning agents----------------------------------------------------------
-		
-		//Create the (empty) reward table.
-		//48 states (24 time zones each with a boolean) and two possible actions.
-		//States are 0-23 and Actions are 0-1.		
+		//Stores a reward value alongside an associated discount factor.
 		qValues = new HashMap<Integer,Double[]>();
 		
-	//Array that stores a reward value alongside an associated discount factor.
-		stateArray = new int[24][2];
-		stateActionArray = new int[48][2];
+		stateArray = new int[24][2];		 
+		stateActionArray = new int[48][2];	 
 		
 		preJourneyStage = false;
 		action = 0;
@@ -70,19 +62,19 @@ public class LearningAgent extends Agent {
 		estimatedJourneyWeight = 0.0;
 		edgeJourneyTime = 0;
 		
-	//Populate the state array
-	for(int i = 0; i<24; i++){
-		for(int j = 0; j<2; j++){
-			stateArray[i][j] = (2*i) + j;
+		//Populate the state array
+		for(int i = 0; i<24; i++){
+			for(int j = 0; j<2; j++){
+				stateArray[i][j] = (2*i) + j;
+			}
 		}
-	}
 	
-	//Populate the state action array
-	for(int i = 0; i<48; i++){
-		for(int j = 0; j<2; j++){
-			stateActionArray[i][j] = (2*i) + j;
-		}
-	}	
+		//Populate the state action array
+		for(int i = 0; i<48; i++){
+			for(int j = 0; j<2; j++){
+				stateActionArray[i][j] = (2*i) + j;
+			}
+		}	
 		
 	}
 	
@@ -91,14 +83,13 @@ public class LearningAgent extends Agent {
 		@ScheduledMethod(start = 1, interval = 1) 
 		public void step(){
 									
-	//Do nothing unless active.
+			//Do nothing unless active.
 			if(active==false){
 				if(checkStart(supervisor)){
 					active = true;
 					preJourneyStage = true;
 					supervisor.incrementNumAgents();	
 					path = routeFinder.getRoute(startNode, endNode);
-					distance = routeFinder.getDistance(startNode, endNode);
 					if(checkCongestion(path)){
 						warningReceived = 0;
 						secondPath(routeFinder);
@@ -108,7 +99,7 @@ public class LearningAgent extends Agent {
 					return;
 			}
 
-	//Observe the state at the beginning of the journey.
+			//Learning agents make a decision to follow the optimal or sub-optimal route.
 			if(preJourneyStage == true){
 				//Observe the state and retrieve the appropriate action.
 				action = getAction(getState());
@@ -120,7 +111,7 @@ public class LearningAgent extends Agent {
 				estimatedJourneyWeight = calculateEstimatedJourneyWeight(path);
 			}
 			
-	//Move along a route.
+			//Move along a route.
 			if(path.size() > 0 & stage < path.size()){
 
 					if(progress == 0){
@@ -197,7 +188,7 @@ public class LearningAgent extends Agent {
 			}
 			else{
 				currentStateAction = stateProceed;
-				System.out.println("Cheeky! Your probability just got trumped!");
+				System.out.println("Your probability just got trumped!");
 				return 0;
 			}
 		}
@@ -210,7 +201,7 @@ public class LearningAgent extends Agent {
 			}
 			else{
 				currentStateAction = stateYield;
-				System.out.println("Cheeky! Your probability just got trumped!");
+				System.out.println("Your probability just got trumped!");
 				return 1;
 			}
 		}
@@ -235,9 +226,12 @@ public class LearningAgent extends Agent {
 		System.out.println("New Discount Factor = " + stateDiscountFactor);
 	}
 	
-//--------------Utility methods-----------------------------------------------------------------------------------
+	//-----WoLF PHC specific methods----------------------------------------------------------------------------------
+	
+	//--------------Utility methods-----------------------------------------------------------------------------------
 	
 	private double calculateEstimatedJourneyWeight(List<MyEdge> path){
+		
 		double weight = 0.0;
 		MyEdge e;
 
@@ -246,11 +240,40 @@ public class LearningAgent extends Agent {
 					e = path.get(stage);
 					weight += e.getWeight();
 			}
-		return weight;
+			return weight;
 		}
 		else {
 			return 0;
 		}
 		
-	}		
+	}	
+	
+	//Calculate a sub-optimal route.	
+	protected void secondPath(RouteFinder routeFinder){
+		e = getFirstCongestedEdge(path);
+		secondPath = routeFinder.getSecondRoute(e, startNode, endNode);
+		if(secondPath.isEmpty() == true){
+			secondPath = path;
+			return;
+		}
+	}
+	
+	//Check for at least one congested edge on the calculated route.
+	protected boolean checkCongestion(List<MyEdge> path){
+		for(int i = 0; i < path.size(); i++){
+			e = path.get(i);
+			if(e.getNumUsers() >= e.getThreshold())
+				return true;
+		}
+		return false;
+	}
+	
+	protected MyEdge getFirstCongestedEdge(List<MyEdge> path){
+		for(int i = 0; i < path.size(); i++){
+			e = path.get(i);
+			if(e.getNumUsers() >= e.getThreshold())
+				return e;
+		}
+		return null;
+	}
 }
