@@ -1,9 +1,9 @@
 <repast.simphony.chart2.engine.TimeSeriesChartDescriptor>
-  <name>Time Series Chart</name>
+  <name>Total breached edges</name>
   <dataSet>Graph Statistics</dataSet>
   <xAxisLabel>Tick Count</xAxisLabel>
-  <yAxisLabel>Average Progress Rate</yAxisLabel>
-  <chartTitle>Average progress rate</chartTitle>
+  <yAxisLabel>Number of breached edges</yAxisLabel>
+  <chartTitle>Total breached edges</chartTitle>
   <type>TIME_SERIES</type>
   <background>
     <red>192</red>
@@ -21,12 +21,12 @@
   <showLegend>true</showLegend>
   <seriesIds>
     <entry>
-      <string>Average progress rate</string>
+      <string>Total Edges Breached</string>
       <SeriesData>
-        <label>Average progress rate</label>
+        <label>Total Edges Breached</label>
         <color>
-          <red>255</red>
-          <green>200</green>
+          <red>0</red>
+          <green>255</green>
           <blue>0</blue>
           <alpha>255</alpha>
         </color>

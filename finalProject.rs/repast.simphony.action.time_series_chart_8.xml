@@ -1,9 +1,9 @@
 <repast.simphony.chart2.engine.TimeSeriesChartDescriptor>
-  <name>Active Learning Agent Count</name>
-  <dataSet>Learning Agent Statistics</dataSet>
+  <name>Total Edge Users</name>
+  <dataSet>Graph Statistics</dataSet>
   <xAxisLabel>Tick Count</xAxisLabel>
-  <yAxisLabel>Active Learning Agent Count</yAxisLabel>
-  <chartTitle>Active Learning Agent Count</chartTitle>
+  <yAxisLabel>Total Edge Users</yAxisLabel>
+  <chartTitle>Total Edge Users</chartTitle>
   <type>TIME_SERIES</type>
   <background>
     <red>192</red>
@@ -21,9 +21,9 @@
   <showLegend>true</showLegend>
   <seriesIds>
     <entry>
-      <string>Active Learning Agent Count</string>
+      <string>Total Number of Users</string>
       <SeriesData>
-        <label>Active Learning Agent Count</label>
+        <label>Total Number of Users</label>
         <color>
           <red>255</red>
           <green>0</green>

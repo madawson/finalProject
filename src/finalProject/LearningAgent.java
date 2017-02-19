@@ -7,6 +7,7 @@ import repast.simphony.engine.schedule.ScheduledMethod;
 
 public class LearningAgent extends Agent {
 	
+	private boolean qLearning;
 	private HashMap<Integer, Double[]> qValues;
 	private boolean preJourneyStage;
 	private int action; 					//0 for proceed, 1 for yield.
@@ -23,6 +24,9 @@ public class LearningAgent extends Agent {
 	private List<MyEdge> secondPath;		//Stores the current sub-optimal path.
 	
 	//-----Parameters used for data reporting----------------------------------------------------------------
+	
+	private int totalJourneys;
+	private int totalLosses;
 		
 	public LearningAgent(NodeSelector nodeSelector, RouteFinder routeFinder, Supervisor supervisor){
 
@@ -36,6 +40,7 @@ public class LearningAgent extends Agent {
 		this.nodeSelector = nodeSelector;
 		this.routeFinder = routeFinder;
 		this.supervisor = supervisor;
+		qLearning = true;
 		
 		//Obtain the first start and end nodes.
 		startNode = nodeSelector.getNode();
@@ -101,14 +106,22 @@ public class LearningAgent extends Agent {
 
 			//Learning agents make a decision to follow the optimal or sub-optimal route.
 			if(preJourneyStage == true){
-				//Observe the state and retrieve the appropriate action.
-				action = getAction(getState());
-				if(action == 1){
-					path = secondPath;
+				estimatedJourneyWeight = calculateEstimatedJourneyWeight(path);
+				if(qLearning){
+					//Observe the state and retrieve the appropriate action.
+					action = getAction(getState());
+					if(action == 1){
+						path = secondPath;
+					}
+				}
+				else{
+					if(Math.random()<0.8)
+						action = 0;
+					else
+						action = 1;
+						path = secondPath;
 				}
 				preJourneyStage = false;
-				warningReceived = 1;
-				estimatedJourneyWeight = calculateEstimatedJourneyWeight(path);
 			}
 			
 			//Move along a route.
@@ -134,22 +147,28 @@ public class LearningAgent extends Agent {
 				
 			}
 			else {
+				warningReceived = 1;
 				//Calculate the reward (difference between estimated journey length and actual journey length)
+				totalJourneys++;
 				reward = actualJourneyWeight - estimatedJourneyWeight;
-				System.out.println("Proceed = " + action);
+				if(reward>0)
+					totalLosses++;
+		/*		System.out.println("Proceed = " + action);
 				System.out.println("Actual Journey Weight = " + actualJourneyWeight);
 				System.out.println("Estimated Journey Weight = " + estimatedJourneyWeight);
 				System.out.println("Current State Action Before Update = " + currentStateAction);
 				System.out.println("Q-Value BEFORE update = " + qValues.get(currentStateAction)[0]);
-				System.out.println("DF BEFORE update = " + qValues.get(currentStateAction)[1]);
+				System.out.println("DF BEFORE update = " + qValues.get(currentStateAction)[1]); */
 				actualJourneyWeight = 0.0;
 				estimatedJourneyWeight = 0.0;
-				updateQValue(currentStateAction,reward);
-				System.out.println("Current State Action After Update = " + currentStateAction);
+				if(qLearning){
+					updateQValue(currentStateAction,reward);
+				}
+		/*		System.out.println("Current State Action After Update = " + currentStateAction);
 				System.out.println("Q-Value AFTER update = " + qValues.get(currentStateAction)[0]);
 				System.out.println("DF AFTER update = " + qValues.get(currentStateAction)[1]);
 				System.out.println(" ");
-				System.out.println(" ");
+				System.out.println(" "); */
 				reset(supervisor, nodeSelector, routeFinder);
 			}
 		}
@@ -174,13 +193,16 @@ public class LearningAgent extends Agent {
 			qValues.put(stateProceed, rewardAndDiscount);
 			qValues.put(stateYield, rewardAndDiscount);
 			currentStateAction = stateProceed;
-			System.out.println("State Number = " + state);
+	/*		System.out.println("State Number = " + state);
 			System.out.println("Current StateAction Number = " + currentStateAction);
-			System.out.println("New Entry Created");
+			System.out.println("New Entry Created"); */
 			return 0;
 		}
 		else if(qValues.get(stateProceed)[0] > qValues.get(stateYield)[0]){
-			double difference = qValues.get(stateProceed)[0] - qValues.get(stateYield)[0];
+			currentStateAction = stateYield;
+			return 1;
+			//Probabilistic Policy Code
+			/*double difference = qValues.get(stateProceed)[0] - qValues.get(stateYield)[0];
 			double probability = Math.tanh(difference/100) + 0.05;
 			if(Math.random() <= probability){
 				currentStateAction = stateYield;
@@ -190,10 +212,13 @@ public class LearningAgent extends Agent {
 				currentStateAction = stateProceed;
 				System.out.println("Your probability just got trumped!");
 				return 0;
-			}
+			} */
 		}
 		else{
-			double difference = qValues.get(stateYield)[0] - qValues.get(stateProceed)[0];
+			currentStateAction = stateProceed;
+			return 0;			
+			//Probabilistic Policy Code
+			/*double difference = qValues.get(stateYield)[0] - qValues.get(stateProceed)[0];
 			double probability = Math.tanh(difference/100) + 0.05;
 			if(Math.random() <= probability){
 				currentStateAction = stateProceed;
@@ -203,7 +228,7 @@ public class LearningAgent extends Agent {
 				currentStateAction = stateYield;
 				System.out.println("Your probability just got trumped!");
 				return 1;
-			}
+			} */
 		}
 	}
 	
@@ -219,11 +244,11 @@ public class LearningAgent extends Agent {
 		rewardAndDiscount[0] = newReward;
 		rewardAndDiscount[1] = stateDiscountFactor;
 		qValues.put(stateAction, rewardAndDiscount);
-		System.out.println("Q-Value Updated for state action = " + stateAction);
+/*		System.out.println("Q-Value Updated for state action = " + stateAction);
 		System.out.println("Reward Received = " + reward);
 		System.out.println("Old Reward = " + oldReward);
 		System.out.println("New Reward = " + newReward);
-		System.out.println("New Discount Factor = " + stateDiscountFactor);
+		System.out.println("New Discount Factor = " + stateDiscountFactor); */
 	}
 	
 	//-----WoLF PHC specific methods----------------------------------------------------------------------------------
@@ -276,4 +301,22 @@ public class LearningAgent extends Agent {
 		}
 		return null;
 	}
+	
+	//------------------Data Gathering Methods----------------------------------------------------------------------------
+	
+	public int getWinningOrLosing(){
+		if(totalJourneys == 0)
+			return 0;
+		else
+			return totalLosses/totalJourneys;
+	}
+	
+	public int getTotalJourneys(){
+		return totalJourneys;
+	}
+	
+	public int getTotalLosses(){
+		return totalLosses;
+	}
+
 }

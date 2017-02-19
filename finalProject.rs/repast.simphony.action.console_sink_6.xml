@@ -1,0 +1,12 @@
+<repast.simphony.data2.engine.ConsoleSinkDescriptor>
+  <name>Learning Agent Statistics</name>
+  <dataSet>End Of Run Learning Agent Stats</dataSet>
+  <delimiter>,</delimiter>
+  <format>TABULAR</format>
+  <sourceIds class="linked-hash-set">
+    <string>Total Journeys</string>
+    <string>Total Losses</string>
+  </sourceIds>
+  <enabled>true</enabled>
+  <outputStream>OUT</outputStream>
+</repast.simphony.data2.engine.ConsoleSinkDescriptor>

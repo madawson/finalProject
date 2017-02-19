@@ -1,5 +1,5 @@
 <repast.simphony.data2.engine.DataSetDescriptor>
-  <name>Supervisor Statistics</name>
+  <name>Graph Statistics</name>
   <type>AGGREGATE</type>
   <inclTick>true</inclTick>
   <inclBatchRun>false</inclBatchRun>
@@ -11,26 +11,53 @@
     <pType>LAST</pType>
     <duration>-1.0</duration>
     <frequency>REPEAT</frequency>
-    <hashCode>459283807</hashCode>
+    <hashCode>-575673754</hashCode>
   </scheduleParams>
   <atEnd>false</atEnd>
   <methodDataSources class="linked-hash-map">
     <entry>
-      <string>Probability</string>
+      <string>Total Edge Weight</string>
       <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>Probability</id>
-        <className>finalProject.Supervisor</className>
-        <methodName>getProbability</methodName>
+        <id>Total Edge Weight</id>
+        <className>finalProject.MyEdge</className>
+        <methodName>getWeight</methodName>
         <aggType>SUM</aggType>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>
     <entry>
-      <string>Total Journey Time</string>
+      <string>Total Number of Users</string>
       <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>Total Journey Time</id>
-        <className>finalProject.Supervisor</className>
-        <methodName>getStepTotalJourneyLength</methodName>
+        <id>Total Number of Users</id>
+        <className>finalProject.MyEdge</className>
+        <methodName>getNumUsers</methodName>
         <aggType>SUM</aggType>
+      </repast.simphony.data2.engine.MethodDataSourceDefinition>
+    </entry>
+    <entry>
+      <string>Total Edges Breached</string>
+      <repast.simphony.data2.engine.MethodDataSourceDefinition>
+        <id>Total Edges Breached</id>
+        <className>finalProject.MyEdge</className>
+        <methodName>getCapacityBreached</methodName>
+        <aggType>SUM</aggType>
+      </repast.simphony.data2.engine.MethodDataSourceDefinition>
+    </entry>
+    <entry>
+      <string>Average numUsers</string>
+      <repast.simphony.data2.engine.MethodDataSourceDefinition>
+        <id>Average numUsers</id>
+        <className>finalProject.MyEdge</className>
+        <methodName>getNumUsers</methodName>
+        <aggType>MEAN</aggType>
+      </repast.simphony.data2.engine.MethodDataSourceDefinition>
+    </entry>
+    <entry>
+      <string>Average progress rate</string>
+      <repast.simphony.data2.engine.MethodDataSourceDefinition>
+        <id>Average progress rate</id>
+        <className>finalProject.MyEdge</className>
+        <methodName>getProgressRate</methodName>
+        <aggType>MEAN</aggType>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>
   </methodDataSources>

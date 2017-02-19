@@ -1,5 +1,5 @@
 <repast.simphony.data2.engine.DataSetDescriptor>
-  <name>Learning Agent Statistics</name>
+  <name>Supervisor Statistics</name>
   <type>AGGREGATE</type>
   <inclTick>true</inclTick>
   <inclBatchRun>false</inclBatchRun>
@@ -11,38 +11,30 @@
     <pType>LAST</pType>
     <duration>-1.0</duration>
     <frequency>REPEAT</frequency>
-    <hashCode>797844448</hashCode>
+    <hashCode>459283807</hashCode>
   </scheduleParams>
   <atEnd>false</atEnd>
   <methodDataSources class="linked-hash-map">
     <entry>
-      <string>Active Learning Agent Count</string>
+      <string>Probability</string>
       <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>Active Learning Agent Count</id>
-        <className>finalProject.LearningAgent</className>
-        <methodName>getStatus</methodName>
+        <id>Probability</id>
+        <className>finalProject.Supervisor</className>
+        <methodName>getProbability</methodName>
         <aggType>SUM</aggType>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>
     <entry>
-      <string>Losses</string>
+      <string>Total Journey Time</string>
       <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>Losses</id>
-        <className>finalProject.LearningAgent</className>
-        <methodName>getWinningOrLosing</methodName>
+        <id>Total Journey Time</id>
+        <className>finalProject.Supervisor</className>
+        <methodName>getStepTotalJourneyLength</methodName>
         <aggType>SUM</aggType>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>
   </methodDataSources>
-  <countSources class="linked-hash-map">
-    <entry>
-      <string>Learning Agent Count</string>
-      <repast.simphony.data2.engine.CountSourceDefinition>
-        <typeName>finalProject.LearningAgent</typeName>
-        <id>Learning Agent Count</id>
-      </repast.simphony.data2.engine.CountSourceDefinition>
-    </entry>
-  </countSources>
+  <countSources class="linked-hash-map"/>
   <customNADataSources class="linked-hash-map"/>
   <customAggDataSources class="linked-hash-map"/>
 </repast.simphony.data2.engine.DataSetDescriptor>

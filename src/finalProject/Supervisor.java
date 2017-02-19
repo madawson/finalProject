@@ -7,7 +7,9 @@ import repast.simphony.engine.schedule.ScheduledMethod;
 
 public class Supervisor {
 	
-	private HashMap<Double, Double> targetNumbers;		//Stores the target NoAA value for each time interval.
+	private HashMap<Double, Double> targetNumbers;		//The active target numbers hash table.
+	private HashMap<Double, Double> targetNumbers1;		//Stores the target NoAA value for each time interval for scenario 1.
+	private HashMap<Double, Double> targetNumbers2;		//Stored the target NoAA value for each time interval for scenario 2.
 	private double probability;
 	private double numAgents;
 	private double targetNumAgents;
@@ -24,33 +26,61 @@ public class Supervisor {
 		
 		probability = 0.0;
 
-		//Construct the target table.
-		targetNumbers = new HashMap<Double, Double>();
-		targetNumbers.put(0.0, 10.0);
-		targetNumbers.put(1.0, 3.0);
-		targetNumbers.put(2.0, 2.0);
-		targetNumbers.put(3.0, 3.0);
-		targetNumbers.put(4.0, 10.0);
-		targetNumbers.put(5.0, 25.0);
-		targetNumbers.put(6.0, 100.0);
-		targetNumbers.put(7.0, 175.0);
-		targetNumbers.put(8.0, 175.0);
-		targetNumbers.put(9.0, 135.0);
-		targetNumbers.put(10.0, 100.0);
-		targetNumbers.put(11.0, 100.0);
-		targetNumbers.put(12.0, 100.0);
-		targetNumbers.put(13.0, 100.0);
-		targetNumbers.put(14.0, 130.0);
-		targetNumbers.put(15.0, 150.0);
-		targetNumbers.put(16.0, 200.0);
-		targetNumbers.put(17.0, 210.0);
-		targetNumbers.put(18.0, 150.0);
-		targetNumbers.put(19.0, 100.0);
-		targetNumbers.put(20.0, 50.0);
-		targetNumbers.put(21.0, 35.0);
-		targetNumbers.put(22.0, 20.0);
-		targetNumbers.put(23.0, 10.0);
+		//Construct the target table for scenario 1 (mid-week).
+		targetNumbers1 = new HashMap<Double, Double>();
+		targetNumbers1.put(0.0, 10.0);
+		targetNumbers1.put(1.0, 3.0);
+		targetNumbers1.put(2.0, 2.0);
+		targetNumbers1.put(3.0, 3.0);
+		targetNumbers1.put(4.0, 10.0);
+		targetNumbers1.put(5.0, 25.0);
+		targetNumbers1.put(6.0, 100.0);
+		targetNumbers1.put(7.0, 175.0);
+		targetNumbers1.put(8.0, 175.0);
+		targetNumbers1.put(9.0, 135.0);
+		targetNumbers1.put(10.0, 100.0);
+		targetNumbers1.put(11.0, 100.0);
+		targetNumbers1.put(12.0, 100.0);
+		targetNumbers1.put(13.0, 100.0);
+		targetNumbers1.put(14.0, 130.0);
+		targetNumbers1.put(15.0, 150.0);
+		targetNumbers1.put(16.0, 200.0);
+		targetNumbers1.put(17.0, 210.0);
+		targetNumbers1.put(18.0, 150.0);
+		targetNumbers1.put(19.0, 100.0);
+		targetNumbers1.put(20.0, 50.0);
+		targetNumbers1.put(21.0, 35.0);
+		targetNumbers1.put(22.0, 20.0);
+		targetNumbers1.put(23.0, 10.0);
+		
+		targetNumbers2 = new HashMap<Double, Double>();
+		targetNumbers2.put(0.0, 10.0);
+		targetNumbers2.put(1.0, 3.0);
+		targetNumbers2.put(2.0, 2.0);
+		targetNumbers2.put(3.0, 3.0);
+		targetNumbers2.put(4.0, 10.0);
+		targetNumbers2.put(5.0, 25.0);
+		targetNumbers2.put(6.0, 65.0);
+		targetNumbers2.put(7.0, 105.0);
+		targetNumbers2.put(8.0, 145.0);
+		targetNumbers2.put(9.0, 200.0);
+		targetNumbers2.put(10.0, 190.0);
+		targetNumbers2.put(11.0, 180.0);
+		targetNumbers2.put(12.0, 170.0);
+		targetNumbers2.put(13.0, 160.0);
+		targetNumbers2.put(14.0, 150.0);
+		targetNumbers2.put(15.0, 150.0);
+		targetNumbers2.put(16.0, 130.0);
+		targetNumbers2.put(17.0, 100.0);
+		targetNumbers2.put(18.0, 80.0);
+		targetNumbers2.put(19.0, 60.0);
+		targetNumbers2.put(20.0, 50.0);
+		targetNumbers2.put(21.0, 35.0);
+		targetNumbers2.put(22.0, 20.0);
+		targetNumbers2.put(23.0, 10.0);
 				
+		targetNumbers = targetNumbers1;
+		
 		scaleFactor = totalAgentCount/250;
 		
 		numAgents= 0.0;
