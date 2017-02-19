@@ -22,6 +22,7 @@ public class LearningAgent extends Agent {
 	private int[][] stateArray;				//Stores an index for each state.
 	private int[][] stateActionArray;		//Stores an index for a state/action pair.
 	private List<MyEdge> secondPath;		//Stores the current sub-optimal path.
+	private double policyTemperature;
 	
 	//-----Parameters used for data reporting----------------------------------------------------------------
 	
@@ -40,7 +41,7 @@ public class LearningAgent extends Agent {
 		this.nodeSelector = nodeSelector;
 		this.routeFinder = routeFinder;
 		this.supervisor = supervisor;
-		qLearning = true;
+		policyTemperature = 0.3;
 		
 		//Obtain the first start and end nodes.
 		startNode = nodeSelector.getNode();
@@ -66,6 +67,7 @@ public class LearningAgent extends Agent {
 		actualJourneyWeight = 0.0;
 		estimatedJourneyWeight = 0.0;
 		edgeJourneyTime = 0;
+		qLearning = false;
 		
 		//Populate the state array
 		for(int i = 0; i<24; i++){
@@ -115,11 +117,12 @@ public class LearningAgent extends Agent {
 					}
 				}
 				else{
-					if(Math.random()<0.8)
+				/*	if(Math.random()<0.8)
 						action = 0;
 					else
 						action = 1;
-						path = secondPath;
+						path = secondPath; */
+					action = 0;
 				}
 				preJourneyStage = false;
 			}
@@ -198,37 +201,16 @@ public class LearningAgent extends Agent {
 			System.out.println("New Entry Created"); */
 			return 0;
 		}
-		else if(qValues.get(stateProceed)[0] > qValues.get(stateYield)[0]){
-			currentStateAction = stateYield;
-			return 1;
-			//Probabilistic Policy Code
-			/*double difference = qValues.get(stateProceed)[0] - qValues.get(stateYield)[0];
-			double probability = Math.tanh(difference/100) + 0.05;
-			if(Math.random() <= probability){
-				currentStateAction = stateYield;
-				return 1;
-			}
-			else{
-				currentStateAction = stateProceed;
-				System.out.println("Your probability just got trumped!");
-				return 0;
-			} */
-		}
 		else{
-			currentStateAction = stateProceed;
-			return 0;			
-			//Probabilistic Policy Code
-			/*double difference = qValues.get(stateYield)[0] - qValues.get(stateProceed)[0];
-			double probability = Math.tanh(difference/100) + 0.05;
-			if(Math.random() <= probability){
-				currentStateAction = stateProceed;
-				return 0;
+			double proceedProbability = getYieldProbability(stateProceed, stateYield);
+			if(Math.random() <= proceedProbability){
+				currentStateAction = stateYield;
+				return 1;
 			}
 			else{
-				currentStateAction = stateYield;
-				System.out.println("Your probability just got trumped!");
-				return 1;
-			} */
+				currentStateAction = stateProceed;
+				return 0;
+			} 
 		}
 	}
 	
@@ -300,6 +282,13 @@ public class LearningAgent extends Agent {
 				return e;
 		}
 		return null;
+	}
+	
+	protected double getYieldProbability(Integer stateProceed, Integer stateYield){
+		double proceedTerm = Math.exp(qValues.get(stateProceed)[0]/policyTemperature);
+		double yieldTerm = Math.exp(qValues.get(stateYield)[0]/policyTemperature);
+		double total = proceedTerm + yieldTerm;
+		return proceedTerm/total;
 	}
 	
 	//------------------Data Gathering Methods----------------------------------------------------------------------------
