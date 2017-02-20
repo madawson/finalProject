@@ -25,11 +25,11 @@
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>
     <entry>
-      <string>Losses</string>
+      <string>Average Journey Time</string>
       <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>Losses</id>
+        <id>Average Journey Time</id>
         <className>finalProject.LearningAgent</className>
-        <methodName>getWinningOrLosing</methodName>
+        <methodName>getAverageJourneyTime</methodName>
         <aggType>SUM</aggType>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>

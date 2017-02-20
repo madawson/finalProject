@@ -21,12 +21,17 @@ public class LearningAgent extends Agent {
 	private int edgeJourneyTime;
 	private int[][] stateArray;				//Stores an index for each state.
 	private int[][] stateActionArray;		//Stores an index for a state/action pair.
+	private int[] stateVisitedCount;		//Stores the number of times a state has been visited.
+	private double[] policy;
+	private double[] averagePolicy;
 	private List<MyEdge> secondPath;		//Stores the current sub-optimal path.
 	private double policyTemperature;
 	
 	//-----Parameters used for data reporting----------------------------------------------------------------
 	
 	private int totalJourneys;
+	private int totalJourneyTime;
+	private double averageJourneyTime;
 	private int totalLosses;
 		
 	public LearningAgent(NodeSelector nodeSelector, RouteFinder routeFinder, Supervisor supervisor){
@@ -57,6 +62,9 @@ public class LearningAgent extends Agent {
 		
 		stateArray = new int[24][2];		 
 		stateActionArray = new int[48][2];	 
+		stateVisitedCount = new int[48];
+		policy = new double[48];
+		averagePolicy = new double[48];
 		
 		preJourneyStage = false;
 		action = 0;
@@ -67,7 +75,10 @@ public class LearningAgent extends Agent {
 		actualJourneyWeight = 0.0;
 		estimatedJourneyWeight = 0.0;
 		edgeJourneyTime = 0;
-		qLearning = false;
+		qLearning = true;
+		totalJourneys = 0;
+		totalJourneyTime = 0;
+		averageJourneyTime = 0.0;
 		
 		//Populate the state array
 		for(int i = 0; i<24; i++){
@@ -97,9 +108,9 @@ public class LearningAgent extends Agent {
 					preJourneyStage = true;
 					supervisor.incrementNumAgents();	
 					path = routeFinder.getRoute(startNode, endNode);
+					secondPath(routeFinder);
 					if(checkCongestion(path)){
 						warningReceived = 0;
-						secondPath(routeFinder);
 					}
 				}
 				else 
@@ -117,12 +128,12 @@ public class LearningAgent extends Agent {
 					}
 				}
 				else{
-				/*	if(Math.random()<0.8)
+					if(Math.random()<0.5)
 						action = 0;
 					else
 						action = 1;
-						path = secondPath; */
-					action = 0;
+						path = secondPath; 
+				//	action = 0;
 				}
 				preJourneyStage = false;
 			}
@@ -153,6 +164,8 @@ public class LearningAgent extends Agent {
 				warningReceived = 1;
 				//Calculate the reward (difference between estimated journey length and actual journey length)
 				totalJourneys++;
+				totalJourneyTime += journeyLength;
+				averageJourneyTime = totalJourneyTime / totalJourneys;
 				reward = actualJourneyWeight - estimatedJourneyWeight;
 				if(reward>0)
 					totalLosses++;
@@ -235,6 +248,11 @@ public class LearningAgent extends Agent {
 	
 	//-----WoLF PHC specific methods----------------------------------------------------------------------------------
 	
+	private void updateAveragePolicy(int state){
+		stateVisitedCount[state] += 1; 			//Increment the number of times this state has been visited.
+		averagePolicy[state] += (1/stateVisitedCount[state])*(policy[state] - averagePolicy[state]);
+	}
+	
 	//--------------Utility methods-----------------------------------------------------------------------------------
 	
 	private double calculateEstimatedJourneyWeight(List<MyEdge> path){
@@ -276,12 +294,25 @@ public class LearningAgent extends Agent {
 	}
 	
 	protected MyEdge getFirstCongestedEdge(List<MyEdge> path){
+		int greatestNumUsers = 0;
+		int currentNumUsers = 0;
+		MyEdge mostCongestedEdge = e;
+		for(int i = 0; i < path.size(); i++){
+			e = path.get(i);
+			currentNumUsers = e.getNumUsers();
+			if(currentNumUsers > greatestNumUsers){
+				greatestNumUsers = currentNumUsers;
+				mostCongestedEdge = e;
+			}
+		}
+		return mostCongestedEdge;
+		/*
 		for(int i = 0; i < path.size(); i++){
 			e = path.get(i);
 			if(e.getNumUsers() >= e.getThreshold())
 				return e;
 		}
-		return null;
+		return path.get(1); */
 	}
 	
 	protected double getYieldProbability(Integer stateProceed, Integer stateYield){
@@ -306,6 +337,10 @@ public class LearningAgent extends Agent {
 	
 	public int getTotalLosses(){
 		return totalLosses;
+	}
+	
+	public double getAverageJourneyTime(){
+		return averageJourneyTime;
 	}
 
 }

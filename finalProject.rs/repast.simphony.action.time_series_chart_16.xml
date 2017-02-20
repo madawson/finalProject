@@ -1,5 +1,5 @@
 <repast.simphony.chart2.engine.TimeSeriesChartDescriptor>
-  <name>Time Series Chart</name>
+  <name>Average Progress Rate</name>
   <dataSet>Graph Statistics</dataSet>
   <xAxisLabel>Tick Count</xAxisLabel>
   <yAxisLabel>Average Progress Rate</yAxisLabel>
