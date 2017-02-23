@@ -10,10 +10,12 @@ import repast.simphony.engine.schedule.ScheduledMethod;
 public class LearningAgent extends Agent {
 	
 	private boolean qLearning;
+	private boolean wolfPhc;
 	private HashMap<Integer, Double[]> qValues;
 	private boolean preJourneyStage;
 	private int action; 					//0 for proceed, 1 for yield.
 	private double reward;
+	private int state;
 	private double discountFactor; 			//*NOTE: You need to add proper functionality to make this decay intelligently and to choose the decay rate.*
 	private int warningReceived; 			//0 if true, 1 if false.
 	private int currentStateAction;
@@ -45,7 +47,6 @@ public class LearningAgent extends Agent {
 
 	//-----Initialisation steps common to all agents---------------------------------------------------------
 		
-		//Initialise the agent instance variables.
 		stage = 0;			
 		progress = 0;
 		active = false;
@@ -65,23 +66,29 @@ public class LearningAgent extends Agent {
 				
 	//-----Initialisation steps for learning agents----------------------------------------------------------
 		
+		//Switch Q-Learning on or off.
+		qLearning = true;
+		
+		//Switch WoLF PHC on or off.
+		wolfPhc = false;
+		
 		//Stores a reward value alongside an associated discount factor.
 		qValues = new HashMap<Integer,Double[]>();
 		
 		stateArray = new int[24][2];		 
 		stateActionArray = new int[48][2];	 
 		
+		totalJourneys = 0;
 		preJourneyStage = false;
 		action = 0;
 		reward = 0.0;
+		state = 0;
 		discountFactor = 0.6;
 		warningReceived = 1;
 		cumulativeWeight = 0.0;
 		actualJourneyWeight = 0.0;
 		estimatedJourneyWeight = 0.0;
 		edgeJourneyTime = 0;
-		qLearning = true;
-		totalJourneys = 0;
 		totalJourneyTime = 0;
 		averageJourneyTime = 0.0;
 		
@@ -146,7 +153,8 @@ public class LearningAgent extends Agent {
 				estimatedJourneyWeight = calculateEstimatedJourneyWeight(path);
 				if(qLearning){
 					//Observe the state and retrieve the appropriate action.
-					action = getAction(getState());
+					state = getState();
+					action = getAction(state);
 					if(action == 1){
 						path = secondPath;
 					}
@@ -204,6 +212,10 @@ public class LearningAgent extends Agent {
 				if(qLearning){
 					updateQValue(currentStateAction,reward);
 				}
+				if(wolfPhc){
+					updateAveragePolicy(state);
+					updateMixedPolicy(state,action);
+				}
 		/*		System.out.println("Current State Action After Update = " + currentStateAction);
 				System.out.println("Q-Value AFTER update = " + qValues.get(currentStateAction)[0]);
 				System.out.println("DF AFTER update = " + qValues.get(currentStateAction)[1]);
@@ -226,6 +238,7 @@ public class LearningAgent extends Agent {
 		
 		Integer stateProceed = new Integer(stateActionArray[state][0]);
 		Integer stateYield = new Integer(stateActionArray[state][1]);
+		double proceedProbability = 0.0;
 		if(!qValues.containsKey(stateProceed) & !qValues.containsKey(stateYield)){
 			Double[] rewardAndDiscount = new Double[2];
 			rewardAndDiscount[0] = new Double(0.0);
@@ -239,7 +252,13 @@ public class LearningAgent extends Agent {
 			return 0;
 		}
 		else{
-			double proceedProbability = getYieldProbability(stateProceed, stateYield);
+			if(!wolfPhc){
+				proceedProbability = getSoftMaxProbability(stateProceed, stateYield);
+			}
+			else{
+				proceedProbability = getMixedProbabilityYield(state);
+			}
+			
 			if(Math.random() <= proceedProbability){
 				currentStateAction = stateYield;
 				return 1;
@@ -306,13 +325,17 @@ public class LearningAgent extends Agent {
 		double averagePolicySum = 0.0;
 		
 		for(int i = 0; i<2; i++){
-			mixedPolicySum += mixedPolicy[state][action]*stateActionArray[state][action];
-			mixedPolicySum += mixedPolicy[state][oppositeAction]*stateActionArray[state][oppositeAction];
+			int stateAction = stateActionArray[state][action];
+			mixedPolicySum += mixedPolicy[state][action]*qValues.get(stateAction)[0];
+			stateAction = stateActionArray[state][oppositeAction];
+			mixedPolicySum += mixedPolicy[state][oppositeAction]*qValues.get(stateAction)[0];
 		}
 		
 		for(int i = 0; i<2; i++){
-			averagePolicySum += averagePolicy[state][action]*stateActionArray[state][action];
-			averagePolicySum += averagePolicy[state][oppositeAction]*stateActionArray[state][oppositeAction];
+			int stateAction = stateActionArray[state][action];
+			averagePolicySum += averagePolicy[state][action]*qValues.get(stateAction)[0];
+			stateAction = stateActionArray[state][oppositeAction];
+			averagePolicySum += averagePolicy[state][oppositeAction]*qValues.get(stateAction)[0];
 		}
 		
 		if(mixedPolicySum < averagePolicySum)
@@ -377,11 +400,15 @@ public class LearningAgent extends Agent {
 		return mostCongestedEdge;
 	}
 	
-	protected double getYieldProbability(Integer stateProceed, Integer stateYield){
+	protected double getSoftMaxProbability(Integer stateProceed, Integer stateYield){
 		double proceedTerm = Math.exp(qValues.get(stateProceed)[0]/policyTemperature);
 		double yieldTerm = Math.exp(qValues.get(stateYield)[0]/policyTemperature);
 		double total = proceedTerm + yieldTerm;
 		return proceedTerm/total;
+	}
+	
+	protected double getMixedProbabilityYield(int state){
+		return mixedPolicy[state][1];
 	}
 	
 	//------------------Data Gathering Methods----------------------------------------------------------------------------
