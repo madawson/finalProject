@@ -6,6 +6,8 @@ import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 import repast.simphony.context.Context;
 import repast.simphony.dataLoader.ContextBuilder;
 import repast.simphony.engine.environment.RunEnvironment;
+import repast.simphony.engine.schedule.Schedule;
+import repast.simphony.engine.schedule.ScheduleParameters;
 import repast.simphony.parameter.Parameters;
 
 public class FinalProjectBuilder implements ContextBuilder<Object> {
@@ -35,14 +37,14 @@ public class FinalProjectBuilder implements ContextBuilder<Object> {
 		for (int i = 0; i < agentCount; i++) {
 			context.add(new Agent(nodeSelector, routeFinder, supervisor));
 		}
-		
-
+				
 		for(int i = 0; i < learningAgentCount; i++){
-			context.add(new LearningAgent(nodeSelector, routeFinder, supervisor));
+			LearningAgent learningAgent = new LearningAgent(nodeSelector, routeFinder, supervisor);
+			context.add(learningAgent);
 		}
 		
 		context.add(supervisor);
-				
+		
 		return context;
 	}
 

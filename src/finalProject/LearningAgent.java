@@ -3,6 +3,8 @@ package finalProject;
 import java.util.HashMap;
 import java.util.List;
 
+import repast.simphony.engine.schedule.Schedule;
+import repast.simphony.engine.schedule.ScheduleParameters;
 import repast.simphony.engine.schedule.ScheduledMethod;
 
 public class LearningAgent extends Agent {
@@ -22,10 +24,12 @@ public class LearningAgent extends Agent {
 	private int[][] stateArray;				//Stores an index for each state.
 	private int[][] stateActionArray;		//Stores an index for a state/action pair.
 	private int[] stateVisitedCount;		//Stores the number of times a state has been visited.
-	private double[] policy;
-	private double[] averagePolicy;
+	private double[][] averagePolicy;
+	private double[][] mixedPolicy;
 	private List<MyEdge> secondPath;		//Stores the current sub-optimal path.
 	private double policyTemperature;
+	private double deltaLearningRateWinning;
+	private double deltaLearningRateLosing;
 	
 	//-----Parameters used for data reporting----------------------------------------------------------------
 	
@@ -33,6 +37,9 @@ public class LearningAgent extends Agent {
 	private int totalJourneyTime;
 	private double averageJourneyTime;
 	private int totalLosses;
+	
+	ScheduleParameters endOfRun = ScheduleParameters.createAtEnd(ScheduleParameters.LAST_PRIORITY);
+	Schedule schedule = new Schedule();
 		
 	public LearningAgent(NodeSelector nodeSelector, RouteFinder routeFinder, Supervisor supervisor){
 
@@ -52,8 +59,9 @@ public class LearningAgent extends Agent {
 		startNode = nodeSelector.getNode();
 		endNode = nodeSelector.getNode();
 		
-		//Try to avoid having the same start and end node (not crucial).
-		endNode = (startNode == endNode) ? nodeSelector.getNode() : endNode;
+		//Avoid having the same start node and end node.
+		while(startNode == endNode)
+			endNode = nodeSelector.getNode();
 				
 	//-----Initialisation steps for learning agents----------------------------------------------------------
 		
@@ -62,9 +70,6 @@ public class LearningAgent extends Agent {
 		
 		stateArray = new int[24][2];		 
 		stateActionArray = new int[48][2];	 
-		stateVisitedCount = new int[48];
-		policy = new double[48];
-		averagePolicy = new double[48];
 		
 		preJourneyStage = false;
 		action = 0;
@@ -94,8 +99,27 @@ public class LearningAgent extends Agent {
 			}
 		}	
 		
+		//Schedule methods to run at the end of simulation.
+		schedule.schedule(endOfRun, this, "printFinalDecisions");
+		
+		//-----Initialisation steps WoLF PHC----------------------------------------------------------	
+		
+		deltaLearningRateWinning = 0.2;
+		deltaLearningRateLosing = 0.6;
+		
+		stateVisitedCount = new int[48];
+		averagePolicy = new double[48][2];
+		mixedPolicy = new double[48][2];
+		
+		//Populate the mixed policy array with (1/action_set_size)
+		for(int i = 0; i<48; i++){
+			for(int j = 0; j<2; j++){
+				mixedPolicy[i][j] = 0.5;
+			}
+		}
+		
 	}
-	
+		
 //------------------Step Method---------------------------------------------------------------------------------------
 	
 		@ScheduledMethod(start = 1, interval = 1) 
@@ -133,7 +157,7 @@ public class LearningAgent extends Agent {
 					else
 						action = 1;
 						path = secondPath; 
-				//	action = 0;
+				//	action = 0; //Used for always proceed
 				}
 				preJourneyStage = false;
 			}
@@ -250,7 +274,51 @@ public class LearningAgent extends Agent {
 	
 	private void updateAveragePolicy(int state){
 		stateVisitedCount[state] += 1; 			//Increment the number of times this state has been visited.
-		averagePolicy[state] += (1/stateVisitedCount[state])*(policy[state] - averagePolicy[state]);
+		for(int i = 0; i<2; i++){
+			averagePolicy[state][i] += (1/stateVisitedCount[state])*(mixedPolicy[state][i] - averagePolicy[state][i]);
+		}
+	}
+	
+	private void updateMixedPolicy(int state, int action){
+		
+		int oppositeAction = 0;
+		double currentDelta;
+		
+		switch (action){
+			case 0: oppositeAction = 1; break;
+			case 1: oppositeAction = 0; break;
+		}
+		
+		if(winning(state, action, oppositeAction))
+			currentDelta = deltaLearningRateWinning;
+		else
+			currentDelta = deltaLearningRateLosing; 
+		
+		
+		if(stateActionArray[state][action]>stateActionArray[state][oppositeAction])
+			currentDelta = (-1)*currentDelta;
+		
+		mixedPolicy[state][action] += currentDelta;
+	}
+	
+	private boolean winning(int state, int action, int oppositeAction){
+		double mixedPolicySum = 0.0;
+		double averagePolicySum = 0.0;
+		
+		for(int i = 0; i<2; i++){
+			mixedPolicySum += mixedPolicy[state][action]*stateActionArray[state][action];
+			mixedPolicySum += mixedPolicy[state][oppositeAction]*stateActionArray[state][oppositeAction];
+		}
+		
+		for(int i = 0; i<2; i++){
+			averagePolicySum += averagePolicy[state][action]*stateActionArray[state][action];
+			averagePolicySum += averagePolicy[state][oppositeAction]*stateActionArray[state][oppositeAction];
+		}
+		
+		if(mixedPolicySum < averagePolicySum)
+			return true;
+		else
+			return false;
 	}
 	
 	//--------------Utility methods-----------------------------------------------------------------------------------
@@ -275,7 +343,7 @@ public class LearningAgent extends Agent {
 	
 	//Calculate a sub-optimal route.	
 	protected void secondPath(RouteFinder routeFinder){
-		e = getFirstCongestedEdge(path);
+		MyEdge e = getFirstCongestedEdge(path);
 		secondPath = routeFinder.getSecondRoute(e, startNode, endNode);
 		if(secondPath.isEmpty() == true){
 			secondPath = path;
@@ -285,6 +353,7 @@ public class LearningAgent extends Agent {
 	
 	//Check for at least one congested edge on the calculated route.
 	protected boolean checkCongestion(List<MyEdge> path){
+		MyEdge e = path.get(0);
 		for(int i = 0; i < path.size(); i++){
 			e = path.get(i);
 			if(e.getNumUsers() >= e.getThreshold())
@@ -296,7 +365,7 @@ public class LearningAgent extends Agent {
 	protected MyEdge getFirstCongestedEdge(List<MyEdge> path){
 		int greatestNumUsers = 0;
 		int currentNumUsers = 0;
-		MyEdge mostCongestedEdge = e;
+		MyEdge mostCongestedEdge = path.get(0);
 		for(int i = 0; i < path.size(); i++){
 			e = path.get(i);
 			currentNumUsers = e.getNumUsers();
@@ -306,13 +375,6 @@ public class LearningAgent extends Agent {
 			}
 		}
 		return mostCongestedEdge;
-		/*
-		for(int i = 0; i < path.size(); i++){
-			e = path.get(i);
-			if(e.getNumUsers() >= e.getThreshold())
-				return e;
-		}
-		return path.get(1); */
 	}
 	
 	protected double getYieldProbability(Integer stateProceed, Integer stateYield){
@@ -342,5 +404,17 @@ public class LearningAgent extends Agent {
 	public double getAverageJourneyTime(){
 		return averageJourneyTime;
 	}
-
+	
+	public void printFinalDecisions(){
+		int takeOptimal = 0;
+		int takeSubOptimal = 0;
+		for(int i = 0; i<48; i++){
+			if(stateActionArray[i][0] < stateActionArray[i][1])
+				takeOptimal++;
+			else
+				takeSubOptimal++;	
+		}
+		System.out.println("takeOptimal total = " + takeOptimal + " and takeSubOptimal total = " + takeSubOptimal);
+	}
+	
 }

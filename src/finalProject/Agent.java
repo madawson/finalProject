@@ -39,9 +39,9 @@ public class Agent {
 		startNode = nodeSelector.getNode();
 		endNode = nodeSelector.getNode();
 		
-	//Try to avoid having the same start and end node (not crucial).
-		endNode = (startNode == endNode) ? nodeSelector.getNode() : endNode;
-		
+	//Avoid having the same start node and end node.
+		while(startNode == endNode)
+			endNode = nodeSelector.getNode();		
 	}
 		
 //------------------Step Method---------------------------------------------------------------------------------------
@@ -110,8 +110,9 @@ public class Agent {
 		startNode = endNode;
 		endNode = nodeSelector.getNode();
 		
-		//Try to avoid having the same start and end node (not crucial).
-		endNode = (startNode == endNode) ? nodeSelector.getNode() : endNode;
+		//Avoid having the same start node and end node.
+		while(startNode == endNode)
+			endNode = nodeSelector.getNode();
 	}
 
 	//Send the length of last completed journey to the supervisor.
