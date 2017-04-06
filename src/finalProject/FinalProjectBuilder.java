@@ -6,9 +6,13 @@ import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 import repast.simphony.context.Context;
 import repast.simphony.dataLoader.ContextBuilder;
 import repast.simphony.engine.environment.RunEnvironment;
-import repast.simphony.engine.schedule.Schedule;
-import repast.simphony.engine.schedule.ScheduleParameters;
 import repast.simphony.parameter.Parameters;
+
+/**
+ * @author      Matthew Dawson 
+ * @version     1.0                 (current version number of program)
+ * @since       1.0          (the version of the package this class was first added to)
+ */
 
 public class FinalProjectBuilder implements ContextBuilder<Object> {
 

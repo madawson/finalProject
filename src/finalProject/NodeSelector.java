@@ -7,6 +7,12 @@ import java.util.Random;
 
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 
+/**
+ * @author      Matthew Dawson 
+ * @version     1.0                 (current version number of program)
+ * @since       1.0          (the version of the package this class was first added to)
+ */
+
 public class NodeSelector {
 	
 	/*The node selector class is used to select either an 'S' type node or an 'L' type node depending on predetermined probabilities.
@@ -15,8 +21,19 @@ public class NodeSelector {
 	  'L': 0.7
 	 */
 	
-	private List<MyNode> nodeList;
+	/**
+	 * Stores the list of all nodes found in the provided graph.
+	 */
+	List<MyNode> nodeList;
+	
+	/**
+	 * Stores the list of all nodes of type 'S' found in the provided graph.
+	 */
 	List<MyNode> sList;
+	
+	/**
+	 * Stores the list of all nodes of type 'N' found in the provided graph.
+	 */
 	List<MyNode> lList;
 	
 	public NodeSelector(DirectedSparseMultigraph<MyNode,MyEdge> g){
@@ -30,16 +47,23 @@ public class NodeSelector {
 		MyNode currentNode;
 		String checkType;
 		
+		String sType = "S";
+		String lType = "L";
+		
 		for(int i= 0; i < nodeList.size(); i++){
 			currentNode = nodeList.get(i);
 			checkType = currentNode.getType();
-			if(checkType.equals("S"))
+			if(checkType.equals(sType))
 				sList.add(currentNode);
-			else
+			else if(checkType.equals(lType))
 				lList.add(currentNode);
 		}
 	}
 	
+	/**
+	 * Selects either type 'S' or 'L' with given probability and then a node from the chosen list at random.
+	 * @return a node.
+	 */
 	public MyNode getNode() {
 		
 		//Probabilistically select a specific node.

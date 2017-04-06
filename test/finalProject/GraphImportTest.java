@@ -5,7 +5,6 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Random;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -18,17 +17,12 @@ import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 public class GraphImportTest {
 	
 	DirectedSparseMultigraph<MyNode,MyEdge> g;
-	Collection<MyNode> c;
-	Collection<MyEdge> ce;
-	List<MyNode> l;
-	List<MyEdge> le;
+	Collection<MyNode> nodes;
+	Collection<MyEdge> edges;
+	List<MyNode> nodesArrayList;
+	List<MyEdge> edgesArrayList;
 	MyNode n;
 	MyEdge e;
-	String id;
-	int check;
-	double dcheck;
-	String type;
-	List<MyNode> nodeList;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -40,118 +34,67 @@ public class GraphImportTest {
 
 	@Before
 	public void setUp() throws Exception {
-		
+		g = GraphLoader.importGraph();		
 	}
 
 	@After
 	public void tearDown() throws Exception {
 	}
+	
+	@Test
+	public void checkNumberOfNodes(){
+		
+		nodes = g.getVertices();
+		nodesArrayList = new ArrayList<MyNode>(nodes);
+				
+		assertTrue(nodesArrayList.size() == 39);
+	}
+	
+	@Test
+	public void checkNumberOfEdges(){
+		
+		edges = g.getEdges();
+		edgesArrayList = new ArrayList<MyEdge>(edges);
+		
+		assertTrue(edgesArrayList.size() == 88);		
+	}
+	
+	@Test
+	public void checkMRoads(){
 
+		edges = g.getEdges();
+		edgesArrayList = new ArrayList<MyEdge>(edges);
+		for(int i = 0; i < edgesArrayList.size(); i++){
+			e = edgesArrayList.get(i);
+			if(e.getType() == "M"){
+				e = edgesArrayList.get(i);
+				assertTrue(e.getInitialWeight() == 40.0);
+				assertTrue(e.getWeight() == 40.0);
+				assertTrue(e.getThreshold() == 20);
+				assertTrue(e.getCapacity() == 25);
+				assertTrue(e.getNumUsers() == 0);
+				assertTrue(e.getInitialProgressRate() == 10.0);
+			}
+		}		
+	}
+	
 	@Test
-	public void getNodesTest() {
-		g = GraphLoader.importGraph();
-		c = g.getVertices();
-		l = new ArrayList<MyNode>(c);
-		n = l.get(0);
-		id = n.getId();
-		System.out.println(id);
-		id = n.getType();
-		System.out.println(id);		
-		
+	public void checkARoads(){
+
+		edges = g.getEdges();
+		edgesArrayList = new ArrayList<MyEdge>(edges);
+		for(int i = 0; i < edgesArrayList.size(); i++){
+			e = edgesArrayList.get(i);
+			if(e.getType() == "A"){
+				e = edgesArrayList.get(i);
+				assertTrue(e.getInitialWeight() == 60.0);
+				assertTrue(e.getWeight() == 60.0);
+				assertTrue(e.getThreshold() == 15);
+				assertTrue(e.getCapacity() == 20);
+				assertTrue(e.getNumUsers() == 0);
+				assertTrue(e.getInitialProgressRate() == 5.0);
+			}
+		}	
 	}
 
-	@Test
-	public void getEdgesTest() {
-		g = GraphLoader.importGraph();
-		ce = g.getEdges();
-		le = new ArrayList<MyEdge>(ce);
-		e = le.get(0);
-		dcheck = e.getWeight();
-		id = e.getId();
-		System.out.println(dcheck);
-		System.out.println(id);
-		dcheck = e.getThreshold();
-		System.out.println(dcheck);
-		id = e.getType();
-		System.out.println(id);
-		check = e.getNumUsers();
-		System.out.println(check);	
-		check = e.getCapacity();
-		System.out.println(check);
-		
-		
-	}
-	
-	@Test
-	public void getNumNodesTest() {
-		g = GraphLoader.importGraph();
-		check = g.getVertexCount();
-		System.out.println(check);
-		
-	}
-	
-	@Test
-	public void getNumEdgesTest() {
-		g = GraphLoader.importGraph();
-		check = g.getEdgeCount();
-		System.out.println(check);
-		
-	}
-	
-	@Test
-	public void getNodeTest() {
-		
-		g = GraphLoader.importGraph();
-		
-		Collection<MyNode> nodes = g.getVertices();
-		nodeList = new ArrayList<MyNode>(nodes);
-
-		Random rnd = new Random();
-		float number = rnd.nextFloat();
-
-		if(number<0.3)
-			type = "S";		
-		else
-			type = "L";
-		
-		MyNode container;
-		String checkType;
-		List<MyNode> subSetList = new ArrayList<MyNode>();
-		for(int i= 0; i < nodeList.size(); i++){
-			container = nodeList.get(i);
-			checkType = container.getType();
-			if(checkType.equals(type))
-				subSetList.add(container);
-		}
-		
-		int index = rnd.nextInt(subSetList.size());
-		MyNode node = subSetList.get(index);
-		
-		System.out.print(node.getId());
-		
-	}
-	
-	@Test
-	public void EdgesTest() {
-		g = GraphLoader.importGraph();
-		check = g.getEdgeCount();
-		System.out.println(check);
-		ce = g.getEdges();
-		List<MyEdge> edgeList = new ArrayList<MyEdge>(ce);
-		for(int i = 0; i < check; i++)
-			System.out.println(edgeList.get(i).getId());
-		
-	}
-	
-	@Test
-	public void NodeTest() {
-		g = GraphLoader.importGraph();
-		check = g.getVertexCount();
-		System.out.println(check);
-		c = g.getVertices();
-		List<MyNode> nodeList = new ArrayList<MyNode>(c);
-		for(int i = 0; i < check; i++)
-			System.out.println(nodeList.get(i).getId());
-		
-	}
 }

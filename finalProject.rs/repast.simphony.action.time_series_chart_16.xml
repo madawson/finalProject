@@ -1,9 +1,9 @@
 <repast.simphony.chart2.engine.TimeSeriesChartDescriptor>
-  <name>Average Progress Rate</name>
-  <dataSet>Graph Statistics</dataSet>
+  <name>Total Journey Time</name>
+  <dataSet>Supervisor Statistics</dataSet>
   <xAxisLabel>Tick Count</xAxisLabel>
-  <yAxisLabel>Average Progress Rate</yAxisLabel>
-  <chartTitle>Average progress rate</chartTitle>
+  <yAxisLabel>Total Journey Time</yAxisLabel>
+  <chartTitle>Total Journey Time</chartTitle>
   <type>TIME_SERIES</type>
   <background>
     <red>192</red>
@@ -21,12 +21,12 @@
   <showLegend>true</showLegend>
   <seriesIds>
     <entry>
-      <string>Average progress rate</string>
+      <string>Total Journey Time</string>
       <SeriesData>
-        <label>Average progress rate</label>
+        <label>Total Journey Time</label>
         <color>
           <red>255</red>
-          <green>200</green>
+          <green>0</green>
           <blue>0</blue>
           <alpha>255</alpha>
         </color>

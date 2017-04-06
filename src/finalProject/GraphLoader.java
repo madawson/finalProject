@@ -6,13 +6,29 @@ import java.io.*;
 import org.apache.commons.collections15.Transformer;
 import edu.uci.ics.jung.graph.*;
 
+/**
+ * @author      Matthew Dawson 
+ * @version     1.0                 (current version number of program)
+ * @since       1.0          (the version of the package this class was first added to)
+ */
+
 public class GraphLoader{
-		
+	
+	/**
+	 * The location of the graphml formatted file to be imported.
+	 */
 	static String src = "src/finalProject/descriptions.graphml";
+	/**
+	 * Used to store the type of edge being imported; either "M" or "A".
+	 */
 	static String type;
 
+	/**
+	 * Attempts to import a graph from a graphml formatted file in a specified location.
+	 * @return an object of type "DirectedSparseMultigraph" provided by JUNG.
+	 */
 	public static DirectedSparseMultigraph<MyNode,MyEdge> importGraph(){
-	        	
+			        	
 		DirectedSparseMultigraph<MyNode,MyEdge> g = new DirectedSparseMultigraph<MyNode,MyEdge>();
 	    
 		try{

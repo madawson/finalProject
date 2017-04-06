@@ -7,6 +7,12 @@ import repast.simphony.engine.schedule.Schedule;
 import repast.simphony.engine.schedule.ScheduleParameters;
 import repast.simphony.engine.schedule.ScheduledMethod;
 
+/**
+ * @author      Matthew Dawson 
+ * @version     1.0                 (current version number of program)
+ * @since       1.0          (the version of the package this class was first added to)
+ */
+
 public class LearningAgent extends Agent {
 	
 	private boolean qLearning;
@@ -83,7 +89,7 @@ public class LearningAgent extends Agent {
 		action = 0;
 		reward = 0.0;
 		state = 0;
-		discountFactor = 0.6;
+		discountFactor = 1.0;
 		warningReceived = 1;
 		cumulativeWeight = 0.0;
 		actualJourneyWeight = 0.0;
@@ -106,13 +112,15 @@ public class LearningAgent extends Agent {
 			}
 		}	
 		
+		initialiseHashTable(); 
+		
 		//Schedule methods to run at the end of simulation.
 		schedule.schedule(endOfRun, this, "printFinalDecisions");
 		
 		//-----Initialisation steps WoLF PHC----------------------------------------------------------	
 		
 		deltaLearningRateWinning = 0.2;
-		deltaLearningRateLosing = 0.6;
+		deltaLearningRateLosing = 1.0;
 		
 		stateVisitedCount = new int[48];
 		averagePolicy = new double[48][2];
@@ -160,12 +168,22 @@ public class LearningAgent extends Agent {
 					}
 				}
 				else{
-					if(Math.random()<0.5)
+				
+				 	double newRandom = Math.random();
+					if(newRandom<0.8){
+					//	action = 1;
+					//	path = secondPath;
 						action = 0;
-					else
+					}
+					else{
+					//	action = 0;
 						action = 1;
-						path = secondPath; 
+						path = secondPath;
+					}
+				
 				//	action = 0; //Used for always proceed
+				//	action = 1;
+				//	path = secondPath;
 				}
 				preJourneyStage = false;
 			}
@@ -227,13 +245,20 @@ public class LearningAgent extends Agent {
 		
 //--------------Q-learning methods-----------------------------------------------------------------------------------
 		
-	//Observe the current state.
+	/**
+	 * Use the value of the current system tick to look up the state number.
+	 * @return
+	 */
 	private int getState(){
 		int timeIndex = (int)supervisor.getTimeIndex();
 		return stateArray[timeIndex][warningReceived];
 	}
 	
-	//Select an action based on the current state.
+	/**
+	 * Select an action based on the current state.
+	 * @param state is the current state number.
+	 * @return either an integer 1 or integer 0 corresponding to the actions "takeSubOptimal" and "takeOptimal" respectively.
+	 */
 	private int getAction(int state){
 		
 		Integer stateProceed = new Integer(stateActionArray[state][0]);
@@ -245,11 +270,11 @@ public class LearningAgent extends Agent {
 			rewardAndDiscount[1] = new Double(discountFactor);
 			qValues.put(stateProceed, rewardAndDiscount);
 			qValues.put(stateYield, rewardAndDiscount);
-			currentStateAction = stateProceed;
+			currentStateAction = stateYield;
 	/*		System.out.println("State Number = " + state);
 			System.out.println("Current StateAction Number = " + currentStateAction);
 			System.out.println("New Entry Created"); */
-			return 0;
+			return 1;
 		}
 		else{
 			if(!wolfPhc){
@@ -270,15 +295,23 @@ public class LearningAgent extends Agent {
 		}
 	}
 	
-	//Update the stored Q-value and associated discount factor.
+	/**
+	 * Update the stored Q-value and associated discount factor.
+	 * @param stateAction is the index of the current state-action pair.
+	 * @param reward is latest reward that has been obtained.
+	 */
 	private void updateQValue(int stateAction, double reward){
 		double oldReward = qValues.get(stateAction)[0];
 		double stateDiscountFactor = qValues.get(stateAction)[1];
 		Double[] rewardAndDiscount = new Double[2];
 		double newReward = oldReward + (stateDiscountFactor*(reward - oldReward));
+		//Code to make the learning rate decay
+		
+		/*
 		if(stateDiscountFactor != 0.0){
 			stateDiscountFactor -= 0.1;
 		}
+		*/
 		rewardAndDiscount[0] = newReward;
 		rewardAndDiscount[1] = stateDiscountFactor;
 		qValues.put(stateAction, rewardAndDiscount);
@@ -291,6 +324,10 @@ public class LearningAgent extends Agent {
 	
 	//-----WoLF PHC specific methods----------------------------------------------------------------------------------
 	
+	/**
+	 * Update the WoLF PHC average policy.
+	 * @param state is the current state number.
+	 */
 	private void updateAveragePolicy(int state){
 		stateVisitedCount[state] += 1; 			//Increment the number of times this state has been visited.
 		for(int i = 0; i<2; i++){
@@ -298,6 +335,11 @@ public class LearningAgent extends Agent {
 		}
 	}
 	
+	/**
+	 * Update the WolF PHC mixed policy.
+	 * @param state is the current state number.
+	 * @param action is the current action number; 1 for "takeSubOptimal" or 0 for "takeOptimal".
+	 */
 	private void updateMixedPolicy(int state, int action){
 		
 		int oppositeAction = 0;
@@ -318,8 +360,17 @@ public class LearningAgent extends Agent {
 			currentDelta = (-1)*currentDelta;
 		
 		mixedPolicy[state][action] += currentDelta;
+		
+		normaliseProbabilities(state);
 	}
 	
+	/**
+	 * Calculates whether the agent is 'winning' or 'losing' in the context of the WoLF PHC algorithm.
+	 * @param state is the current state number.
+	 * @param action is the current action number; 1 for "takeSubOptimal" or 0 for "takeOptimal".
+	 * @param oppositeAction is the opposite value to the current action number.
+	 * @return
+	 */
 	private boolean winning(int state, int action, int oppositeAction){
 		double mixedPolicySum = 0.0;
 		double averagePolicySum = 0.0;
@@ -344,8 +395,26 @@ public class LearningAgent extends Agent {
 			return false;
 	}
 	
+	/**
+	 * Constrains the newly calculated probabilities to a legal probability distribution.
+	 * @param state is the current state number.
+	 */
+	private void normaliseProbabilities(int state){
+		double takeOptimalProbability = mixedPolicy[state][0];
+		double takeSubOptimalProbability = mixedPolicy[state][1];
+		double total = takeOptimalProbability + takeSubOptimalProbability;
+		
+		mixedPolicy[state][0] = takeOptimalProbability/total;
+		mixedPolicy[state][1] = takeSubOptimalProbability/total;
+	}
+	
 	//--------------Utility methods-----------------------------------------------------------------------------------
 	
+	/**
+	 * Calculates the total journey weight for a path.
+	 * @param path is the sequence of edges constituting a route.
+	 * @return the total weight of all edges contained within the path.
+	 */
 	private double calculateEstimatedJourneyWeight(List<MyEdge> path){
 		
 		double weight = 0.0;
@@ -364,7 +433,10 @@ public class LearningAgent extends Agent {
 		
 	}	
 	
-	//Calculate a sub-optimal route.	
+	/**
+	 * Calculate a sub-optimal route.	
+	 * @param routeFinder is the object that contains the functionality to calculate routes.
+	 */
 	protected void secondPath(RouteFinder routeFinder){
 		MyEdge e = getFirstCongestedEdge(path);
 		secondPath = routeFinder.getSecondRoute(e, startNode, endNode);
@@ -374,7 +446,11 @@ public class LearningAgent extends Agent {
 		}
 	}
 	
-	//Check for at least one congested edge on the calculated route.
+	/**
+	 * Check for at least one congested edge on the calculated route.
+	 * @param path is the sequence of edges constituting a route. 
+	 * @return
+	 */
 	protected boolean checkCongestion(List<MyEdge> path){
 		MyEdge e = path.get(0);
 		for(int i = 0; i < path.size(); i++){
@@ -385,6 +461,11 @@ public class LearningAgent extends Agent {
 		return false;
 	}
 	
+	/**
+	 * Finds the first congested edge within a path.
+	 * @param path
+	 * @return
+	 */
 	protected MyEdge getFirstCongestedEdge(List<MyEdge> path){
 		int greatestNumUsers = 0;
 		int currentNumUsers = 0;
@@ -400,19 +481,49 @@ public class LearningAgent extends Agent {
 		return mostCongestedEdge;
 	}
 	
-	protected double getSoftMaxProbability(Integer stateProceed, Integer stateYield){
-		double proceedTerm = Math.exp(qValues.get(stateProceed)[0]/policyTemperature);
-		double yieldTerm = Math.exp(qValues.get(stateYield)[0]/policyTemperature);
-		double total = proceedTerm + yieldTerm;
-		return proceedTerm/total;
+	/**
+	 * Calculates an exploration probability using the Softmax approach.
+	 * @param stateProceed is the index of the tuple that represents the current state paired with the "takeOptimal" action.
+	 * @param stateYield is the index of the tuple that represents the current state paired with the "takeSubOptimal" action.
+	 * @return
+	 */
+	protected double getSoftMaxProbability(Integer stateAction1, Integer stateAction2){
+		double action1Term = Math.exp(qValues.get(stateAction1)[0]/policyTemperature);
+		double action2Term = Math.exp(qValues.get(stateAction2)[0]/policyTemperature);
+		double total = action1Term + action2Term;
+		return action1Term/total;
 	}
 	
 	protected double getMixedProbabilityYield(int state){
 		return mixedPolicy[state][1];
 	}
 	
+	protected void initialiseHashTable(){
+		int currentState;
+		Integer stateProceed;
+		Integer stateYield;
+		Double[] rewardAndDiscount;
+		for(int i = 0; i<24; i++){
+			for(int j = 0; j<2; j++){
+				currentState = stateArray[i][j];
+				stateProceed = new Integer(stateActionArray[currentState][0]);
+				stateYield = new Integer(stateActionArray[currentState][1]);
+				rewardAndDiscount = new Double[2];
+				rewardAndDiscount[0] = new Double(0.0);
+				rewardAndDiscount[1] = new Double(discountFactor);
+				qValues.put(stateProceed, rewardAndDiscount);
+				qValues.put(stateYield, rewardAndDiscount);
+			}
+		}
+		
+	}
+	
 	//------------------Data Gathering Methods----------------------------------------------------------------------------
 	
+	/**
+	 * Divides the total number of losses by the total number of journeys.
+	 * @return total number of losses divided by total number of journeys.
+	 */
 	public int getWinningOrLosing(){
 		if(totalJourneys == 0)
 			return 0;
@@ -420,14 +531,26 @@ public class LearningAgent extends Agent {
 			return totalLosses/totalJourneys;
 	}
 	
+	/**
+	 * Used for data gathering.
+	 * @return total number of journeys. 
+	 */
 	public int getTotalJourneys(){
 		return totalJourneys;
 	}
 	
+	/**
+	 * Used for data gathering. 
+	 * @return  total number of losses.
+	 */
 	public int getTotalLosses(){
 		return totalLosses;
 	}
 	
+	/**
+	 * Used for data gathering.
+	 * @return average journey time of this learning agent.
+	 */
 	public double getAverageJourneyTime(){
 		return averageJourneyTime;
 	}
@@ -444,4 +567,17 @@ public class LearningAgent extends Agent {
 		System.out.println("takeOptimal total = " + takeOptimal + " and takeSubOptimal total = " + takeSubOptimal);
 	}
 	
+	@ScheduledMethod(start = 1, interval = 10)
+	public void reportProbabilityTakeOptimal(){
+		
+		/*int state = 36;
+		Integer stateProceed = new Integer(stateActionArray[state][0]);
+		Integer stateYield = new Integer(stateActionArray[state][1]);
+		double probabilityTakeOptimal = getSoftMaxProbability(stateProceed, stateYield);*/
+		System.out.println(getState());
+		Integer stateProceed = new Integer(stateActionArray[state][0]);
+		System.out.println(qValues.get(stateProceed)[0]);
+	}
+
+		
 }

@@ -1,9 +1,9 @@
 <repast.simphony.chart2.engine.TimeSeriesChartDescriptor>
-  <name>Probability</name>
-  <dataSet>Supervisor Statistics</dataSet>
+  <name>Total Agent Count</name>
+  <dataSet>Agent Statistics</dataSet>
   <xAxisLabel>Tick Count</xAxisLabel>
-  <yAxisLabel>Probability</yAxisLabel>
-  <chartTitle>Probability</chartTitle>
+  <yAxisLabel>Total Agent Count</yAxisLabel>
+  <chartTitle>Total Agent Count</chartTitle>
   <type>TIME_SERIES</type>
   <background>
     <red>192</red>
@@ -21,13 +21,13 @@
   <showLegend>true</showLegend>
   <seriesIds>
     <entry>
-      <string>Probability</string>
+      <string>Agent Count</string>
       <SeriesData>
-        <label>Probability</label>
+        <label>Agent Count</label>
         <color>
-          <red>255</red>
+          <red>0</red>
           <green>0</green>
-          <blue>51</blue>
+          <blue>255</blue>
           <alpha>255</alpha>
         </color>
       </SeriesData>

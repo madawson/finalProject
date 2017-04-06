@@ -8,12 +8,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath;
-import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
-
-public class ShortestPathTests {
-	
-	DirectedSparseMultigraph<MyNode,MyEdge> g = new DirectedSparseMultigraph<MyNode, MyEdge>();
+public class WolfTests {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -33,7 +28,7 @@ public class ShortestPathTests {
 
 	@Test
 	public void test() {
-
+		fail("Not yet implemented");
 	}
 
 }

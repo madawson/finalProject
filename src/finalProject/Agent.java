@@ -4,6 +4,12 @@ import java.util.List;
 
 import repast.simphony.engine.schedule.ScheduledMethod;
 
+/**
+ * @author      Matthew Dawson 
+ * @version     1.0                 (current version number of program)
+ * @since       1.0          (the version of the package this class was first added to)
+ */
+
 public class Agent {
 	
 	//The agent class contains the logic for standard agent behaviour. 
@@ -84,7 +90,11 @@ public class Agent {
 		
 //------------------Utility Methods---------------------------------------------------------------------------------------
 					
-	//Check whether or not to start a new journey.
+	/**
+	 * Check whether or not to start a new journey.
+	 * @param supervisor is the object that stores the probability that an agent should start a new journey.
+	 * @return true if the agent should start a new journey, false otherwise.
+	 */
 	protected boolean checkStart(Supervisor supervisor){
 		double probability = supervisor.getProbability(); 
 		if(Math.random() <= probability) 
@@ -93,13 +103,20 @@ public class Agent {
 			return false;
 	}
 	
-	//Increase the progress along the current edge.
+	/**
+	 * Increase the progress along the current edge.
+	 */
 	protected void updateProgress(){
 		progress = progress + e.getProgressRate();
 		journeyLength++;
 	}
 	
-	//Reset to initial conditions prior to starting a new route.	
+	/**
+	 * Reset to initial conditions prior to starting a new route.	
+	 * @param supervisor
+	 * @param nodeSelector
+	 * @param routeFinder
+	 */
 	protected void reset(Supervisor supervisor, NodeSelector nodeSelector, RouteFinder routeFinder){
 		stage = 0;
 		progress = 0;
@@ -115,13 +132,20 @@ public class Agent {
 			endNode = nodeSelector.getNode();
 	}
 
-	//Send the length of last completed journey to the supervisor.
+	/**
+	 * Send the length of last completed journey to the supervisor.
+	 * @param supervisor
+	 */
 	protected void publishJourneyLength(Supervisor supervisor){
 		supervisor.appendJourneyLength(journeyLength);
 	}
 	
 //------------------Data Gathering Methods---------------------------------------------------------------------------------------
 	
+	/**
+	 * Used for data gathering.
+	 * @return whether the agent is active or not. 
+	 */
 	public boolean getStatus(){
 		return active;
 	}

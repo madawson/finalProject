@@ -1,0 +1,100 @@
+Number of nodes:20
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" 
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns 
+ http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+
+
+<!-- Attributes: edge weights, edge types and node types -->
+<key id="d2" for="edge" attr.name="type" attr.type="string">
+ <default>A</default>
+ </key>
+
+
+<key id="d3" for="node" attr.name="type" attr.type="string">
+ <default>T</default>
+ </key>
+
+
+<!-- Parse information -->
+<graph id="Graph" edgedefault="directed"
+ parse.nodes="20"
+ parse.edges="42"
+ parse.nodeids="free"
+ parse.edgeids="free"
+ parse.order="nodesfirst">
+
+
+  <!-- Location nodes -->
+<node id="n5"><data key="d3">S</data></node>
+<node id="n10"><data key="d3">S</data></node>
+<node id="n14"><data key="d3">S</data></node>
+<node id="n15"><data key="d3">S</data></node>
+<node id="n16"><data key="d3">S</data></node>
+<node id="n17"><data key="d3">S</data></node>
+<node id="n18"><data key="d3">S</data></node>
+<node id="n0"><data key="d3">L</data></node>
+<node id="n1"><data key="d3">L</data></node>
+<node id="n2"><data key="d3">L</data></node>
+<node id="n3"><data key="d3">L</data></node>
+<node id="n4"><data key="d3">L</data></node>
+<node id="n6"><data key="d3">L</data></node>
+<node id="n7"><data key="d3">L</data></node>
+<node id="n8"><data key="d3">L</data></node>
+<node id="n9"><data key="d3">L</data></node>
+<node id="n11"><data key="d3">L</data></node>
+<node id="n12"><data key="d3">L</data></node>
+<node id="n13"><data key="d3">L</data></node>
+<node id="n19"><data key="d3">L</data></node>
+
+
+  <!-- A-Roads -->
+<edge id="A0" source="n0" target="n1"/>
+<edge id="A1" source="n1" target="n0"/>
+<edge id="A2" source="n2" target="n0"/>
+<edge id="A3" source="n0" target="n2"/>
+<edge id="A4" source="n3" target="n3"/>
+<edge id="A5" source="n3" target="n3"/>
+<edge id="A6" source="n4" target="n2"/>
+<edge id="A7" source="n2" target="n4"/>
+<edge id="A8" source="n5" target="n2"/>
+<edge id="A9" source="n2" target="n5"/>
+<edge id="A10" source="n6" target="n3"/>
+<edge id="A11" source="n3" target="n6"/>
+<edge id="A12" source="n7" target="n1"/>
+<edge id="A13" source="n1" target="n7"/>
+<edge id="A14" source="n8" target="n1"/>
+<edge id="A15" source="n1" target="n8"/>
+<edge id="A16" source="n9" target="n8"/>
+<edge id="A17" source="n8" target="n9"/>
+<edge id="A18" source="n10" target="n7"/>
+<edge id="A19" source="n7" target="n10"/>
+<edge id="A20" source="n11" target="n2"/>
+<edge id="A21" source="n2" target="n11"/>
+<edge id="A22" source="n12" target="n12"/>
+<edge id="A23" source="n12" target="n12"/>
+<edge id="A24" source="n13" target="n2"/>
+<edge id="A25" source="n2" target="n13"/>
+<edge id="A26" source="n14" target="n4"/>
+<edge id="A27" source="n4" target="n14"/>
+<edge id="A28" source="n15" target="n6"/>
+<edge id="A29" source="n6" target="n15"/>
+<edge id="A30" source="n16" target="n7"/>
+<edge id="A31" source="n7" target="n16"/>
+<edge id="A32" source="n17" target="n13"/>
+<edge id="A33" source="n13" target="n17"/>
+<edge id="A34" source="n18" target="n9"/>
+<edge id="A35" source="n9" target="n18"/>
+<edge id="A36" source="n19" target="n3"/>
+<edge id="A37" source="n3" target="n19"/>
+<edge id="A38" source="n11" target="n1"/>
+<edge id="A39" source="n1" target="n11"/>
+<edge id="A40" source="n19" target="n13"/>
+<edge id="A41" source="n13" target="n19"/>
+
+
+</graph>
+</graphml>
