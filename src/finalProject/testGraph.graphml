@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" 
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+ xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns 
+ http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+
+
+<!-- Attributes: edge weights, edge types and node types -->
+<key id="d2" for="edge" attr.name="type" attr.type="string">
+ <default>A</default>
+ </key>
+
+
+<key id="d3" for="node" attr.name="type" attr.type="string">
+ <default>T</default>
+ </key>
+
+
+<!-- Parse information -->
+<graph id="Graph" edgedefault="directed"
+ parse.nodes="3"
+ parse.edges="6"
+ parse.nodeids="free"
+ parse.edgeids="free"
+ parse.order="nodesfirst">
+
+
+  <!-- Location nodes -->
+  <node id="n0"><data key="d3">S</data></node>
+  <node id="n1"><data key="d3">L</data></node>
+  <node id="n2"><data key="d3">S</data></node>
+  
+    <!-- A-Roads -->
+<edge id="A1" source="n0" target="n1"/>
+<edge id="A2" source="n1" target="n0"/>
+<edge id="A3" source="n0" target="n2"/>
+<edge id="A4" source="n2" target="n0"/>
+<edge id="M5" source="n1" target="n2">
+    <data key="d2">M</data>
+</edge>  
+<edge id="M6" source="n2" target="n1">
+    <data key="d2">M</data>
+</edge>  
+
+</graph>
+</graphml>

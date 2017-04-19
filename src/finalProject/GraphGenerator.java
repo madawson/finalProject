@@ -18,7 +18,7 @@ public class GraphGenerator {
 		
 		public static void main(String[] args) throws FileNotFoundException {
 			
-			buildGraph(20, 2);
+			buildGraph(10, 4, 10, 3);
 			categoriseNodes();
 			
 			//Graph properties	
@@ -142,78 +142,88 @@ public class GraphGenerator {
 			return edge;		
 		}
 		
-		public static void buildGraph(int numberOfVertices, int sparsity){
+		public static void buildGraph(int numberOfVertices, int sparsity, int numberOfSubGraphs, int connectionParameter){
 			
-			Collection<Integer> vertices;
-			List<Integer> verticesArrayList;
+			List<List<Integer>> subGraphs = new ArrayList<List<Integer>>();
 			Random rnd = new Random();
 			Integer selectedNode;
 			Integer selectedNode2;
-			int edgeCount = 2;
+			int nodeCount = 0;
+			int edgeCount = 0;
 			
 			g = new DirectedSparseMultigraph<Integer, Integer>();
 			
-			g.addVertex((Integer) 0);
-			g.addVertex((Integer) 1);
-			g.addEdge((Integer) 0, 0, 1);
-			g.addEdge((Integer) 1, 1, 0);
-			
-			for(int j = 0; j < numberOfVertices-2; j++){
-				//Create new vertex.
-				g.addVertex((Integer) j+2);
-					
-				//Select an existing vertex at random.
-				vertices = g.getVertices();
-				verticesArrayList = new ArrayList<Integer>(vertices);
-				selectedNode = verticesArrayList.get(rnd.nextInt(verticesArrayList.size()));
-					
-				//Add edge between the two nodes.
-				g.addEdge((Integer) edgeCount, j+2, selectedNode);
-				g.addEdge((Integer) edgeCount+1, selectedNode, j+2);
-				edgeCount+=2;
+			//Initialise all sub-graphs with two nodes and two edges between them.
+			for(int i = 0; i < numberOfSubGraphs; i++){
+				nodeCount++;
+				g.addVertex((Integer) nodeCount);
+				nodeCount++;
+				g.addVertex((Integer) nodeCount);
+				edgeCount++;
+				g.addEdge((Integer) edgeCount, (Integer) nodeCount, (Integer) nodeCount-1);
+				edgeCount++;
+				g.addEdge((Integer) edgeCount, (Integer) nodeCount-1, (Integer) nodeCount);
+				List<Integer> subGraph = new ArrayList<Integer>();
+				subGraph.add((Integer) nodeCount);
+				subGraph.add((Integer) nodeCount-1);
+				subGraphs.add(subGraph);
 			}
-						
-			//Randomly add edges according to sparsity parameter.		
-			for(int i = 0; i < sparsity; i++){
 			
-				//Select two existing vertices at random.
-				vertices = g.getVertices();
-				verticesArrayList = new ArrayList<Integer>(vertices);
-				selectedNode = verticesArrayList.get(rnd.nextInt(verticesArrayList.size()));
-				selectedNode2 = verticesArrayList.get(rnd.nextInt(verticesArrayList.size()));
-				
-				//Add an edge between them
-				g.addEdge(edgeCount, selectedNode, selectedNode2);
-				g.addEdge(edgeCount+1, selectedNode2, selectedNode);
-				edgeCount += 2;
-			}
-						
-			
-			
-			//Code for connecting subgraphs.
-			/*
-			for(int i = 0; i<subgraphList.size()-1; i++){
-				subgraph1 = subgraphList.get(i);
-				subgraph2 = subgraphList.get(i+1);
-				
-				for(int j = 0; j < 2; j++){
-					//Select an existing vertex at random from subgraph1.
-					vertices = subgraph1.getVertices();
-					verticesArrayList = new ArrayList<Integer>(vertices);
-					selectedNode = verticesArrayList.get(rnd.nextInt(verticesArrayList.size()));
-				
-					//Select an existing vertex at random from subgraph2.
-					vertices = subgraph2.getVertices();
-					verticesArrayList = new ArrayList<Integer>(vertices);
-					selectedNode2 = verticesArrayList.get(rnd.nextInt(verticesArrayList.size()));
+			//Build each sub-graph.
+			for(int i = 0; i < numberOfSubGraphs; i++){
+				List<Integer> currentList = subGraphs.get(i);
+				for(int j = 0; j < numberOfVertices-2; j++){
 					
-					//Add edge between the two nodes.
-					g.addEdge((Integer) edgeCount, selectedNode, selectedNode2);
-					g.addEdge((Integer) edgeCount+1, selectedNode2, selectedNode);
-					edgeCount+=2;
+					//Create new vertex.
+					nodeCount++;
+					g.addVertex((Integer) nodeCount);
+					
+					//Select an existing vertex at random.
+					selectedNode = currentList.get(rnd.nextInt(currentList.size()));
+										
+					//Add two edges between the two nodes.
+					edgeCount++;
+					g.addEdge((Integer) edgeCount, nodeCount, selectedNode);
+					edgeCount++;
+					g.addEdge((Integer) edgeCount, selectedNode, nodeCount);
 				}
-			} */
-					
+			}
+						
+			//Randomly add edges according to sparsity parameter.
+			for(int i = 0; i < numberOfSubGraphs; i++){
+				List<Integer> currentList = subGraphs.get(i);
+				for(int j = 0; j < sparsity; j++){
+			
+					//Select two existing vertices at random.					
+					selectedNode = currentList.get(rnd.nextInt(currentList.size()));
+					selectedNode2 = currentList.get(rnd.nextInt(currentList.size()));
+				
+					//Add an edge between them
+					edgeCount++;
+					g.addEdge(edgeCount, selectedNode, selectedNode2);
+					edgeCount++;
+					g.addEdge(edgeCount, selectedNode2, selectedNode);
+				}
+			}
+						
+			
+			
+			//Connect the subgraphs.
+			for(int i = 0; i<numberOfSubGraphs-1; i++){
+				for(int j = 0; j<connectionParameter; j++){
+					//Obtain two subgraphs and one node from each.
+					List<Integer> currentList = subGraphs.get(i);
+					selectedNode = currentList.get(rnd.nextInt(currentList.size()));
+					currentList = subGraphs.get(i+1);
+					selectedNode2 = currentList.get(rnd.nextInt(currentList.size()));
+				
+					//Add an edge between them.
+					edgeCount++;
+					g.addEdge(edgeCount, selectedNode, selectedNode2);
+					edgeCount++;
+					g.addEdge(edgeCount, selectedNode2, selectedNode);				
+				}
+			}
 		}
 		
 		public static void categoriseNodes(){
@@ -226,9 +236,9 @@ public class GraphGenerator {
 			
 			vertices = g.getVertices();
 			verticesArrayList = new ArrayList<Integer>(vertices);
-			
-			int nodeDegreeArray[] = new int[verticesArrayList.size()];
-			
+						
+			int nodeDegreeArray[] = new int[verticesArrayList.size()+1];
+						
 			for(int i = 0; i < verticesArrayList.size(); i++){
 				currentNode = verticesArrayList.get(i);
 				edges = g.getInEdges(currentNode);

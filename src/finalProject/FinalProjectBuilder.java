@@ -16,6 +16,12 @@ import repast.simphony.parameter.Parameters;
 
 public class FinalProjectBuilder implements ContextBuilder<Object> {
 
+	/**
+	 * Build method is required by the RePast ContextBuilder interface. This method creates instances of all the required objects
+	 * that are to take part in a simulation. This includes: the nodeSelector, the routeFinder, the supervisor, all standard agents 
+	 * and all learning agents. All of these objects are added to the RePast Context. All edge objects that are found within the 
+	 * imported graph are also added to the Context.
+	 */
 	@Override
 	public Context<Object> build(Context<Object> context) {
 		

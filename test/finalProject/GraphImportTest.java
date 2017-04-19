@@ -47,7 +47,7 @@ public class GraphImportTest {
 		nodes = g.getVertices();
 		nodesArrayList = new ArrayList<MyNode>(nodes);
 				
-		assertTrue(nodesArrayList.size() == 39);
+		assertTrue(nodesArrayList.size() == 3);
 	}
 	
 	@Test
@@ -56,7 +56,7 @@ public class GraphImportTest {
 		edges = g.getEdges();
 		edgesArrayList = new ArrayList<MyEdge>(edges);
 		
-		assertTrue(edgesArrayList.size() == 88);		
+		assertTrue(edgesArrayList.size() == 6);		
 	}
 	
 	@Test
@@ -95,6 +95,42 @@ public class GraphImportTest {
 				assertTrue(e.getInitialProgressRate() == 5.0);
 			}
 		}	
+	}
+	
+	@Test
+	public void checkNumberOfMRoads(){
+		
+		int count = 0;
+		edges = g.getEdges();
+		edgesArrayList = new ArrayList<MyEdge>(edges);
+		for(int i = 0; i < edgesArrayList.size(); i++){
+			e = edgesArrayList.get(i);
+			if(e.getType().equals("M")){
+				count++;
+			}
+		}
+		
+		System.out.println(count);
+		assertTrue(count == 2);
+		
+	}
+	
+	@Test
+	public void checkNumberOfARoads(){
+		
+		int count = 0;
+		edges = g.getEdges();
+		edgesArrayList = new ArrayList<MyEdge>(edges);
+		for(int i = 0; i < edgesArrayList.size(); i++){
+			e = edgesArrayList.get(i);
+			if(e.getType().equals("A")){
+				count++;
+			}
+		}
+		
+		System.out.println(count);
+		assertTrue(count == 4);
+		
 	}
 
 }

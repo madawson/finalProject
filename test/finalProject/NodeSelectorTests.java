@@ -37,20 +37,20 @@ public class NodeSelectorTests {
 	
 	@Test
 	public void checkNodeList(){
-		assertTrue(nodeSelector.nodeList.size() == 39);
+		assertTrue(nodeSelector.nodeList.size() == 3);
 	}
 	
 	@Test
 	public void checkSList() {
 		for(int i = 0; i < nodeSelector.sList.size(); i++){
-			assertTrue(nodeSelector.sList.get(i).getType() != "S");
+			assertTrue(nodeSelector.sList.get(i).getType().equals("S"));
 		}
 	}
 	
 	@Test
 	public void checkLList(){
 		for(int i = 0; i < nodeSelector.lList.size(); i++){
-			assertTrue(nodeSelector.lList.get(i).getType() != "L");
+			assertTrue(nodeSelector.lList.get(i).getType().equals("L"));
 		}		
 	}
 	

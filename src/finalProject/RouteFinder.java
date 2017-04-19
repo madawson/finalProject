@@ -50,19 +50,19 @@ public class RouteFinder {
 	 * @param endNode is the node at the end of the path.
 	 * @return an optimal path between the start node and the end node.
 	 */
-	public List<MyEdge> getRoute(MyNode startNode, MyNode endNode){
+	public List<MyEdge> getShortestRoute(MyNode startNode, MyNode endNode){
 		pathOne = shortestPath.getPath(startNode, endNode);
 		return pathOne;
 	}
 	
 	/**
 	 * Obtain a sub-optimal route between the provided start node and end node.
-	 * @param e the congested edge to be removed from the graph
+	 * @param e is an edge that is present in the optimal path, which will not be present in the sub-optimal path.
 	 * @param startNode is the node at the start of the path.
 	 * @param endNode is the node at the end of the path.
-	 * @return a sub-optimal route.
+	 * @return a sub-optimal route, that does not contain edge e.
 	 */
-	public List<MyEdge> getSecondRoute(MyEdge e, MyNode startNode, MyNode endNode){
+	public List<MyEdge> getSubOptimalRoute(MyEdge e, MyNode startNode, MyNode endNode){
 		Pair<MyNode> endPoints = graph.getEndpoints(e);
 		graph.removeEdge(e);
 		secondShortestPath = new DijkstraShortestPath<MyNode, MyEdge>(graph, t);
@@ -81,21 +81,20 @@ public class RouteFinder {
 		Number distance = shortestPath.getDistance(startNode, endNode);
 		return distance.doubleValue();
 	}
-	
+		
 	/**
-	 * Obtain the total weight of the sub-optimal path.
-	 * @param e the congested edge to be removed from the graph
-	 * @param startNode is the node at the start of the path.
-	 * @param endNode is the node at the end of the path.
-	 * @return the total weight of the sub-optimal path.
-	 */
-	public double getSecondDistance(MyEdge e, MyNode startNode, MyNode endNode){
-		Pair<MyNode> endPoints = graph.getEndpoints(e);
-		graph.removeEdge(e);
-		secondShortestPath = new DijkstraShortestPath<MyNode, MyEdge>(graph, t);
-		Number distance = secondShortestPath.getDistance(startNode, endNode);
-		graph.addEdge(e, endPoints);
-		return distance.doubleValue();
+	 * Used to obtain the total weight of any given path.
+	 * @param path is the list of edges, which are to be inspected to find their weight.
+	 * @return the total weight of all edges within the given path.
+	 */	
+	public double getPathLength(List<MyEdge> path){
+		MyEdge e;
+		double cumulativeWeight = 0.0;
+		for(int i = 0; i<path.size(); i++){
+			e = path.get(i);
+			cumulativeWeight += e.getWeight();
+		}
+		return cumulativeWeight;
 	}
 	
 }

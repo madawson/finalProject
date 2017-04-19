@@ -40,10 +40,7 @@ public class MyEdge {
 	 */
 	private double initialProgressRate;	
 	
-	/**
-	 * The number of users above the capacity.
-	 */
-	private double excessUsers;				
+			
 	
 	/**
 	 * Predetermined value. Edge weight begins to increase when numUsers breaches capacity.
@@ -195,7 +192,7 @@ public class MyEdge {
 	}
 	
 	/**
-	 * Used by an agent to join this edge;
+	 * Used by an agent to join this edge. Edge Weight is recalculated immediately post-joining.
 	 */
 	public void joinEdge(){
 		numUsers++;
@@ -207,7 +204,7 @@ public class MyEdge {
 	}
 	
 	/**
-	 * Used by an agent to leave this edge.
+	 * Used by an agent to leave this edge. Edge weight is recalculated immediately post-leaving.
 	 */
 	public void leaveEdge(){
 		numUsers--;
@@ -231,10 +228,10 @@ public class MyEdge {
 	}
 	
 	/**
-	 * Recalculates the edge weight.
+	 * Recalculates the edge weight based on how many users above capacity are currently using the edge.
 	 */	
 	public void recalculateWeight(){
-		excessUsers = numUsers - capacity;
+		double excessUsers = numUsers - capacity;
 		excessWeight = (Math.tanh(excessUsers/10)*60);
 		weight = initialWeight + excessWeight;
 	}
