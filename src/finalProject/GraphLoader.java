@@ -61,16 +61,16 @@ public class GraphLoader{
                             type = emd.getProperty("d2");
                             e.setType(type);
                             if(type.equals("M")){
-                            	e.setInitialWeight(40.0);
-                            	e.setWeight(40.0);
+                            	e.setInitialWeight(20.0);
+                            	e.setWeight(20.0);
                             	e.setThreshold(20);
                             	e.setCapacity(25);
                             	e.setNumUsers(0);
                             	e.setInitialProgressRate(10.0);
                             }
                             else if(type.equals("A")){
-                            	e.setInitialWeight(60.0);
-                            	e.setWeight(60.0);
+                            	e.setInitialWeight(80.0);
+                            	e.setWeight(80.0);
                             	e.setThreshold(15);
                             	e.setCapacity(20);
                             	e.setNumUsers(0);

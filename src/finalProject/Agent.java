@@ -196,5 +196,5 @@ public class Agent {
 	protected void publishJourneyLength(Supervisor supervisor){
 		supervisor.appendJourneyLength(journeyLength);
 	}
-	
+		
 }

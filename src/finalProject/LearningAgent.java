@@ -19,12 +19,12 @@ public class LearningAgent extends Agent {
 	/**
 	 * True if Q-Learning is activated, false otherwise.
 	 */
-	private boolean qLearning;
+	boolean qLearning;
 	
 	/**
 	 * True if WoLF-PHC is activated, false otherwise. Note that Q-Learning must be activated for WoLF-PHC to be activated.
 	 */
-	private boolean wolfPhc;
+	boolean wolfPhc;
 	
 	/**
 	 * Hash Table used to store the Q-Values and discount factors for each state-action pair.
@@ -61,14 +61,15 @@ public class LearningAgent extends Agent {
 	private double estimatedJourneyWeight;
 	private int edgeJourneyTime;
 	private int[][] stateArray;				//Stores an index for each state.
-	private int[][] stateActionArray;		//Stores an index for a state/action pair.
-	private int[] stateVisitedCount;		//Stores the number of times a state has been visited.
-	private double[][] averagePolicy;
-	private double[][] mixedPolicy;
+	int[][] stateActionArray;		//Stores an index for a state/action pair.
+	int[] stateVisitedCount;		//Stores the number of times a state has been visited.
+	double[][] averagePolicy;
+	double[][] mixedPolicy;
 	List<MyEdge> secondPath;		//Stores the current sub-optimal path.
 	private double policyTemperature;
 	private double deltaLearningRateWinning;
 	private double deltaLearningRateLosing;
+	int currentStartState;
 	
 //-----Parameters used for data reporting----------------------------------------------------------------
 	
@@ -76,6 +77,10 @@ public class LearningAgent extends Agent {
 	private double totalJourneyTime;
 	private double averageJourneyTime;
 	private double totalLosses;
+	Integer state14Proceed;
+	Integer state14Yield;
+	double state14Prob;
+	int numTimes14;
 	
 	ScheduleParameters endOfRun = ScheduleParameters.createAtEnd(ScheduleParameters.LAST_PRIORITY);
 	Schedule schedule = new Schedule();
@@ -117,7 +122,7 @@ public class LearningAgent extends Agent {
 		currentAction = 0;
 		totalJourneys = 0;
 		preJourneyStage = false;
-		discountFactor = 0.6;
+		discountFactor = 0.1;
 		warningReceived = 1;
 		cumulativeWeight = 0.0;
 		actualJourneyWeight = 0.0;
@@ -125,7 +130,7 @@ public class LearningAgent extends Agent {
 		edgeJourneyTime = 0;
 		totalJourneyTime = 0.0;
 		averageJourneyTime = 0.0;
-		policyTemperature = 0.1;
+		policyTemperature = 25.0;
 		
 		//Populate the state array
 		for(int i = 0; i<24; i++){
@@ -143,13 +148,17 @@ public class LearningAgent extends Agent {
 		
 		initialiseHashTable(); 
 		
+		state14Proceed = new Integer(stateActionArray[32][0]);
+		state14Yield = new Integer(stateActionArray[32][1]);
+		state14Prob = 0.0;
+		
 		//Schedule methods to run at the end of simulation.
 		//schedule.schedule(endOfRun, this, "printFinalDecisions");
 		
 //-----Initialisation steps WoLF PHC----------------------------------------------------------	
 		
-		deltaLearningRateWinning = 0.2;
-		deltaLearningRateLosing = 1.0;
+		deltaLearningRateWinning = 0.1;
+		deltaLearningRateLosing = 0.4;
 		
 		stateVisitedCount = new int[48];
 		averagePolicy = new double[48][2];
@@ -168,7 +177,7 @@ public class LearningAgent extends Agent {
 	
 		@ScheduledMethod(start = 1, interval = 1) 
 		public void step(){
-												
+															
 			//Do nothing unless active.
 			if(active==false){
 				if(checkStart(supervisor)){
@@ -191,9 +200,17 @@ public class LearningAgent extends Agent {
 
 				if(qLearning){
 					//Observe the current state.
-					int currentState = getState();
+					currentStartState = getState();
+					//System.out.println(currentState);
+					if(currentStartState == 32){
+						double latestSoftMax14 = getSoftMaxProbability(state14Proceed, state14Yield); 
+						state14Prob = latestSoftMax14;
+						System.out.println(state14Prob);
+						//System.out.println(state14Prob + " , " + supervisor.getTimeIndex());
+					}
+
 					//Retrieve the appropriate action.
-					currentAction = getAction(currentState);
+					currentAction = getAction(currentStartState);
 					if(currentAction == 1){
 						path = secondPath;
 					}
@@ -201,7 +218,7 @@ public class LearningAgent extends Agent {
 				else{
 				
 				 	double newRandom = Math.random();
-					if(newRandom<0.5){
+					if(newRandom<1.0){
 					//	action = 1;
 					//	path = secondPath;
 						currentAction = 0;
@@ -246,28 +263,33 @@ public class LearningAgent extends Agent {
 				warningReceived = 1;
 				
 				//Calculate the reward (difference between estimated optimal journey length and actual journey length).
+
 				totalJourneys++;
+
 				totalJourneyTime += journeyLength;
 				averageJourneyTime = totalJourneyTime / totalJourneys;
 				
 				//Calculate the reward (difference between estimated optimal journey length and actual journey length).
 				double currentReward = actualJourneyWeight - estimatedJourneyWeight;
-				
-				if(currentReward>=0){
-					totalLosses++;
-				}
+
+					if(currentReward>=0){
+						totalLosses++;
+					}
+
 				
 				actualJourneyWeight = 0.0;
 				estimatedJourneyWeight = 0.0;
 				
 				if(qLearning){
-					System.out.println(getTotalLosses()/getTotalJourneys());					
+
+						//System.out.println(getTotalLosses()/getTotalJourneys());
+						//System.out.println(averageJourneyTime);
+
 					updateQValue(currentStateAction,currentReward);	
 				}
 				if(wolfPhc){
-					int currentState = getState();
-					updateAveragePolicy(currentState);
-					updateMixedPolicy(currentState,currentAction);
+					updateAveragePolicy(currentStartState);
+					updateMixedPolicy(currentStartState,currentAction);
 				}
 				
 				//System.out.println(getTotalLosses()/getTotalJourneys());
@@ -346,10 +368,11 @@ public class LearningAgent extends Agent {
 	 * Update the WoLF PHC average policy.
 	 * @param state is the current state number.
 	 */
-	private void updateAveragePolicy(int state){
+	void updateAveragePolicy(int state){
 		stateVisitedCount[state] += 1; 			//Increment the number of times this state has been visited.
 		for(int i = 0; i<2; i++){
-			averagePolicy[state][i] += (1/stateVisitedCount[state])*(mixedPolicy[state][i] - averagePolicy[state][i]);
+			double stepChange = (1.0/stateVisitedCount[state])*(mixedPolicy[state][i] - averagePolicy[state][i]);		
+			averagePolicy[state][i] += stepChange;
 		}
 	}
 	
@@ -358,7 +381,7 @@ public class LearningAgent extends Agent {
 	 * @param state is the current state number.
 	 * @param action is the current action number; 1 for "takeSubOptimal" or 0 for "takeOptimal".
 	 */
-	private void updateMixedPolicy(int state, int action){
+	void updateMixedPolicy(int state, int action){
 		
 		int oppositeAction = 0;
 		double currentDelta;
@@ -374,10 +397,18 @@ public class LearningAgent extends Agent {
 			currentDelta = deltaLearningRateLosing; 
 		
 		
-		if(stateActionArray[state][action]>stateActionArray[state][oppositeAction])
+		if(qValues.get(stateActionArray[state][action])[0] > qValues.get(stateActionArray[state][oppositeAction])[0]){
 			currentDelta = (-1)*currentDelta;
+		}
 		
 		mixedPolicy[state][action] += currentDelta;
+		
+		if(mixedPolicy[state][action] < 0.0){
+			mixedPolicy[state][action] = 0.0;
+		}
+		else if(mixedPolicy[state][action] > 1.0){
+			mixedPolicy[state][action] = 1.0;
+		}
 		
 		normaliseProbabilities(state);
 	}
@@ -389,25 +420,25 @@ public class LearningAgent extends Agent {
 	 * @param oppositeAction is the opposite value to the current action number.
 	 * @return
 	 */
-	private boolean winning(int state, int action, int oppositeAction){
+	boolean winning(int state, int action, int oppositeAction){
 		double mixedPolicySum = 0.0;
 		double averagePolicySum = 0.0;
 		
-		for(int i = 0; i<2; i++){
+		
 			int stateAction = stateActionArray[state][action];
 			mixedPolicySum += mixedPolicy[state][action]*qValues.get(stateAction)[0];
 			stateAction = stateActionArray[state][oppositeAction];
 			mixedPolicySum += mixedPolicy[state][oppositeAction]*qValues.get(stateAction)[0];
-		}
 		
-		for(int i = 0; i<2; i++){
-			int stateAction = stateActionArray[state][action];
+		
+		
+			stateAction = stateActionArray[state][action];
 			averagePolicySum += averagePolicy[state][action]*qValues.get(stateAction)[0];
 			stateAction = stateActionArray[state][oppositeAction];
 			averagePolicySum += averagePolicy[state][oppositeAction]*qValues.get(stateAction)[0];
-		}
 		
-		if(mixedPolicySum < averagePolicySum)
+		
+		if(mixedPolicySum < averagePolicySum) //less than because rewards are negative.
 			return true;
 		else
 			return false;

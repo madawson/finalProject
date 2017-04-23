@@ -133,7 +133,7 @@ public class Supervisor {
 	
 	@ScheduledMethod(start = 2, interval = 1) 
 	public void postStep(){
-		
+				
 		tracker++;
 		targetNumAgents = (getTarget())*scaleFactor;
 		upperBound = targetNumAgents + (10*scaleFactor);

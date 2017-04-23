@@ -29,6 +29,7 @@ public class QLearningTests {
 		RouteFinder r = new RouteFinder(g);
 		Supervisor s = new Supervisor(5000);
 		testAgent = new LearningAgent(n,r,s);
+		testAgent.qLearning = true;
 	}
 
 	@After

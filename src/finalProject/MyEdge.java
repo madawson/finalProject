@@ -246,5 +246,19 @@ public class MyEdge {
 		return capacityBreached;
 	}
 	
+	public boolean getMRoadBreached(){
+		if(this.type.equals("M") & capacityBreached){
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean getARoadBreached(){
+		if(this.type.equals("A") & capacityBreached){
+			return true;
+		}
+		return false;		
+	}
+	
 }
 

@@ -60,6 +60,24 @@
         <aggType>MEAN</aggType>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>
+    <entry>
+      <string>Total M-Roads Breached</string>
+      <repast.simphony.data2.engine.MethodDataSourceDefinition>
+        <id>Total M-Roads Breached</id>
+        <className>finalProject.MyEdge</className>
+        <methodName>getMRoadBreached</methodName>
+        <aggType>SUM</aggType>
+      </repast.simphony.data2.engine.MethodDataSourceDefinition>
+    </entry>
+    <entry>
+      <string>Total A-Roads Breached</string>
+      <repast.simphony.data2.engine.MethodDataSourceDefinition>
+        <id>Total A-Roads Breached</id>
+        <className>finalProject.MyEdge</className>
+        <methodName>getARoadBreached</methodName>
+        <aggType>SUM</aggType>
+      </repast.simphony.data2.engine.MethodDataSourceDefinition>
+    </entry>
   </methodDataSources>
   <countSources class="linked-hash-map"/>
   <customNADataSources class="linked-hash-map"/>
